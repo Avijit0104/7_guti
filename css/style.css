@@ -1,8 +1,8 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; height: 100%; overflow: hidden; background: #1c2a1a; color: #fff;
+html, body { margin: 0; height: 100%; height: 100dvh; width: 100%; width: 100dvw; overflow: hidden; background: #1c2a1a; color: #fff;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Bengali", sans-serif;
   user-select: none; -webkit-user-select: none; touch-action: none; overscroll-behavior: none; }
-#c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+#c { position: fixed; inset: 0; width: 100vw; width: 100dvw; height: 100vh; height: 100dvh; display: block; }
 .hidden { display: none !important; }
 button { font: inherit; color: inherit; cursor: pointer; border: 0; }
 
@@ -50,10 +50,12 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; }
 #keys { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 12px; background: rgba(0,0,0,.4); padding: 4px 12px; border-radius: 999px; pointer-events: none; white-space: nowrap; }
 .touch #keys { display: none; }
 
-.pill { position: absolute; top: max(10px, env(safe-area-inset-top)); height: 34px; padding: 0 14px; border-radius: 999px; background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.3); font-size: 13px; font-weight: 700; }
+.pill { position: absolute; top: max(10px, env(safe-area-inset-top)); height: 34px; padding: 0 14px; border-radius: 999px; background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.3); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.pill.sm { position: static; height: 30px; padding: 0 12px; font-size: 12px; }
 #btnMenu { right: max(10px, env(safe-area-inset-right)); }
 #btnCam { right: calc(max(10px, env(safe-area-inset-right)) + 78px); }
 #btnMute { right: calc(max(10px, env(safe-area-inset-right)) + 144px); padding: 0 10px; font-size: 15px; }
+#btnFull { right: calc(max(10px, env(safe-area-inset-right)) + 194px); padding: 0 10px; font-size: 16px; }
 .round { position: absolute; width: 68px; height: 68px; border-radius: 50%; background: rgba(0,0,0,.4); border: 2px solid rgba(255,255,255,.55);
   font-size: 12px; font-weight: 800; letter-spacing: .04em; touch-action: none; transition: transform .06s, opacity .15s, background .15s; }
 .round:active { transform: scale(.93); }
@@ -90,9 +92,18 @@ input:focus { border-color: #ffe066; }
 .card > button:disabled { opacity: .5; }
 .msg { margin: 0; font-size: 13px; color: #ffd0a8; min-height: 1em; }
 details { font-size: 13px; opacity: .9; } details ul { margin: 6px 0 0; padding-left: 18px; line-height: 1.5; } summary { cursor: pointer; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.card-head h1, .card-head h2 { margin: 0; }
 .teams { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.team-col { padding: 8px 10px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1.5px solid rgba(255,255,255,.14); cursor: pointer; transition: background .15s, border-color .15s, transform .08s; }
+.team-col:hover { background: rgba(255,255,255,.09); }
+.team-col:active { transform: scale(.98); }
+.team-col.active-team { border-color: #ffe066; background: rgba(255,224,102,.1); box-shadow: 0 0 10px rgba(255,224,102,.2); }
 .teams ul { list-style: none; margin: 0; padding: 0; font-size: 14px; line-height: 1.7; }
 .teams li.bot { opacity: .55; } .teams li.me { font-weight: 800; color: #ffe066; }
+#btnSwitchTeam { padding: 11px 14px; border-radius: 12px; background: rgba(255,255,255,.16); font-weight: 700; font-size: 14px; border: 1px solid rgba(255,255,255,.25); }
+#btnSwitchTeam:hover { background: rgba(255,255,255,.25); }
+#btnSwitchTeam:disabled { opacity: 0.45; cursor: not-allowed; }
 
 #rotate { display: none; position: fixed; inset: 0; background: #1c2a1a; z-index: 50; align-items: center; justify-content: center; text-align: center; font-size: 22px; font-weight: 700; }
 #rotate small { font-weight: 400; opacity: .7; font-size: 14px; }

@@ -45,11 +45,22 @@ export class Hud {
   }
 
   lobby(snap, myId, isHost) {
-    const key = snap.p.map((r) => r[P.NAME] + (r[P.FLAGS] & 2)).join('|') + myId;
+    const key = snap.p.map((r) => r[P.NAME] + r[P.TEAM] + (r[P.FLAGS] & 2)).join('|') + myId;
     this._set('lobby', key, () => {
       const li = (r) => `<li class="${r[P.FLAGS] & 2 ? 'bot' : ''} ${r[P.ID] === myId ? 'me' : ''}">${esc(r[P.NAME])}${r[P.FLAGS] & 2 ? ' (bot)' : ''}${r[P.ID] === myId ? ' (you)' : ''}</li>`;
       this.el.lobA.innerHTML = snap.p.filter((r) => r[P.TEAM] === 0).map(li).join('');
       this.el.lobB.innerHTML = snap.p.filter((r) => r[P.TEAM] === 1).map(li).join('');
+      const me = snap.p.find((r) => r[P.ID] === myId);
+      const myTeam = me ? me[P.TEAM] : 0;
+      const targetTeam = myTeam ^ 1;
+      const targetHasBot = snap.p.some((r) => r[P.TEAM] === targetTeam && (r[P.FLAGS] & 2));
+      const btn = $('btnSwitchTeam');
+      if (btn) {
+        btn.innerHTML = `Switch to ${TEAMS[targetTeam].name} Team ${targetTeam === 0 ? '🔴' : '🔵'}`;
+        btn.disabled = !targetHasBot;
+      }
+      if ($('lobTeamA')) $('lobTeamA').classList.toggle('active-team', myTeam === 0);
+      if ($('lobTeamB')) $('lobTeamB').classList.toggle('active-team', myTeam === 1);
     });
     $('btnStart').classList.toggle('hidden', !isHost);
     $('lobWait').classList.toggle('hidden', isHost);

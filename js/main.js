@@ -31,13 +31,60 @@ const camera = new THREE.PerspectiveCamera(62, 1, 0.08, 900);
 const world = buildWorld(scene, quality);
 const view = new View(scene, camera);
 function resize() {
-  renderer.setSize(innerWidth, innerHeight, false);
-  camera.aspect = innerWidth / innerHeight;
+  const w = window.visualViewport ? window.visualViewport.width : innerWidth;
+  const h = window.visualViewport ? window.visualViewport.height : innerHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
   camera.updateProjectionMatrix();
 }
 addEventListener('resize', resize);
 addEventListener('orientationchange', () => setTimeout(resize, 200));
+if (window.visualViewport) window.visualViewport.addEventListener('resize', resize);
 resize();
+
+// ---------- fullscreen helpers ----------
+function isFullscreen() {
+  return !!(document.fullscreenElement || document.webkitFullscreenElement);
+}
+function requestFullscreenMode() {
+  const el = document.documentElement;
+  const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if (rfs && !isFullscreen()) {
+    try {
+      const p = rfs.call(el);
+      if (p && p.catch) p.catch(() => {});
+    } catch (_) {}
+  }
+  if (screen.orientation && screen.orientation.lock) {
+    try { screen.orientation.lock('landscape').catch(() => {}); } catch (_) {}
+  }
+}
+function toggleFullscreenMode() {
+  if (!isFullscreen()) {
+    requestFullscreenMode();
+  } else {
+    const efs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+    if (efs) {
+      try {
+        const p = efs.call(document);
+        if (p && p.catch) p.catch(() => {});
+      } catch (_) {}
+    }
+  }
+}
+function updateFullscreenUI() {
+  const full = isFullscreen();
+  const icon = full ? '🗗' : '⛶';
+  if ($('btnFull')) {
+    $('btnFull').textContent = icon;
+    $('btnFull').setAttribute('aria-label', full ? 'Exit fullscreen' : 'Enter fullscreen');
+  }
+  if ($('btnMenuFull')) $('btnMenuFull').textContent = full ? '🗗 Exit' : '⛶ Fullscreen';
+  if ($('btnLobbyFull')) $('btnLobbyFull').textContent = full ? '🗗 Exit' : '⛶ Fullscreen';
+  setTimeout(resize, 100);
+}
+document.addEventListener('fullscreenchange', updateFullscreenUI);
+document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
 
 // ---------- state ----------
 let mode = 'menu';          // menu | solo | host | guest
@@ -90,6 +137,7 @@ function handleEvent(e) {
       break;
     }
     case 'match': hud.result(e.w, e.sc, teamOf(myId), mode !== 'guest'); (e.w === teamOf(myId) ? sfx.win : sfx.lose)(); break;
+    case 'switch': hud.feed(`${tag(e.id)} switched to ${tname(e.team)}`); break;
     case 'join': hud.feed(`${String(e.name).replace(/[&<>]/g, '')} joined`); break;
     case 'leave': hud.feed(`${String(e.name).replace(/[&<>]/g, '')} left (a bot took over)`); break;
   }
@@ -110,6 +158,7 @@ function startBackground() {
   myId = -1; mode = 'menu';
 }
 function startSolo() {
+  requestFullscreenMode();
   unlockAudio(); resetLocal();
   sim = new Sim({ teamSize, onEvent: onSimEvent });
   myId = sim.addHuman(playerName(), 'local').id;
@@ -118,6 +167,7 @@ function startSolo() {
   sim.startMatch();
 }
 function createRoom() {
+  requestFullscreenMode();
   unlockAudio();
   const code = makeCode();
   $('menuMsg').textContent = 'Creating room…';
@@ -145,6 +195,7 @@ function createRoom() {
         } else if (conn.pid === undefined) return;
         else if (m.t === 'i') sim.setHumanState(conn.pid, m);
         else if (m.t === 'a') sim.action(conn.pid, m);
+        else if (m.t === 'switchTeam') sim.switchTeam(conn.pid);
       },
       onLeave: (conn) => { if (sim && conn.pid !== undefined) sim.removeHuman(conn.pid); },
       onError: (txt) => { if (mode === 'menu') $('menuMsg').textContent = txt; else hud.feed(txt); },
@@ -152,6 +203,7 @@ function createRoom() {
   } catch (err) { $('menuMsg').textContent = 'Multiplayer is unavailable: ' + err.message; }
 }
 function joinRoom(codeRaw) {
+  requestFullscreenMode();
   unlockAudio();
   const code = String(codeRaw || '').toUpperCase().replace(/[^A-Z]/g, '');
   if (code.length !== 5) { $('menuMsg').textContent = 'Enter the 5-letter room code.'; return; }
@@ -204,7 +256,7 @@ $('btnSolo').onclick = startSolo;
 $('btnCreate').onclick = createRoom;
 $('btnJoin').onclick = () => joinRoom($('inCode').value);
 $('inCode').addEventListener('keydown', (e) => { if (e.key === 'Enter') joinRoom($('inCode').value); });
-$('btnStart').onclick = () => { if (sim && mode === 'host') { hud.show('game'); input.enabled = true; sim.startMatch(); } };
+$('btnStart').onclick = () => { requestFullscreenMode(); if (sim && mode === 'host') { hud.show('game'); input.enabled = true; sim.startMatch(); } };
 $('btnAgain').onclick = () => { if (sim && mode !== 'guest') { hud.show('game'); sim.startMatch(); } };
 $('btnLeaveLobby').onclick = $('btnLeaveRes').onclick = $('btnMenu').onclick = () => leave('');
 $('btnMute').onclick = () => {
@@ -212,6 +264,22 @@ $('btnMute').onclick = () => {
   $('btnMute').textContent = m ? '🔇' : '🔊';
   $('btnMute').setAttribute('aria-label', m ? 'Unmute sound' : 'Mute sound');
 };
+function switchMyTeam() {
+  if (sim) sim.switchTeam(myId);
+  else if (guestNet) guestNet.send({ t: 'switchTeam' });
+}
+if ($('btnSwitchTeam')) $('btnSwitchTeam').onclick = switchMyTeam;
+if ($('lobTeamA')) $('lobTeamA').onclick = () => {
+  const r = snap && snap.p.find((x) => x[P.ID] === myId);
+  if (r && r[P.TEAM] !== 0) switchMyTeam();
+};
+if ($('lobTeamB')) $('lobTeamB').onclick = () => {
+  const r = snap && snap.p.find((x) => x[P.ID] === myId);
+  if (r && r[P.TEAM] !== 1) switchMyTeam();
+};
+if ($('btnFull')) $('btnFull').onclick = toggleFullscreenMode;
+if ($('btnMenuFull')) $('btnMenuFull').onclick = toggleFullscreenMode;
+if ($('btnLobbyFull')) $('btnLobbyFull').onclick = toggleFullscreenMode;
 $('btnCopy').onclick = async () => {
   const url = location.origin + location.pathname + '?room=' + $('lobCode').textContent;
   try { await navigator.clipboard.writeText(url); $('btnCopy').textContent = 'Link copied!'; }

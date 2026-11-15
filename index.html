@@ -37,6 +37,7 @@
   <button id="btnMenu" class="pill" aria-label="Leave game">Leave</button>
   <button id="btnCam" class="pill">TPP</button>
   <button id="btnMute" class="pill" aria-label="Toggle sound">🔊</button>
+  <button id="btnFull" class="pill" aria-label="Toggle fullscreen">⛶</button>
   <button id="btnThrow" class="round big">THROW</button>
   <button id="btnAct" class="round">GRAB</button>
   <button id="btnJump" class="round">JUMP</button>
@@ -45,7 +46,10 @@
 <!-- main menu -->
 <div id="menu" class="screen">
   <div class="card">
-    <h1>সাত গুটি <small>Sat Guti · Seven Stones</small></h1>
+    <div class="card-head">
+      <h1>সাত গুটি <small>Sat Guti · Seven Stones</small></h1>
+      <button id="btnMenuFull" class="pill sm" aria-label="Toggle fullscreen">⛶ Fullscreen</button>
+    </div>
     <p class="tag">Break the stack. Rebuild it before the ball finds you.</p>
     <label>Your name <input id="inName" maxlength="14" autocomplete="off" placeholder="Player"></label>
     <div class="row">
@@ -77,13 +81,17 @@
 <!-- room lobby -->
 <div id="lobby" class="screen hidden">
   <div class="card">
-    <h2>Room <span id="lobCode">-----</span></h2>
+    <div class="card-head">
+      <h2>Room <span id="lobCode">-----</span></h2>
+      <button id="btnLobbyFull" class="pill sm" aria-label="Toggle fullscreen">⛶ Fullscreen</button>
+    </div>
     <p class="tag" id="lobHint">Share this code with friends. Empty seats are played by bots.</p>
     <button id="btnCopy">Copy invite link</button>
     <div class="teams">
-      <div><h3 class="red">Red</h3><ul id="lobA"></ul></div>
-      <div><h3 class="blue">Blue</h3><ul id="lobB"></ul></div>
+      <div id="lobTeamA" class="team-col" title="Click to join Red team"><h3 class="red">Red</h3><ul id="lobA"></ul></div>
+      <div id="lobTeamB" class="team-col" title="Click to join Blue team"><h3 class="blue">Blue</h3><ul id="lobB"></ul></div>
     </div>
+    <button id="btnSwitchTeam" class="secondary">Switch to Blue Team 🔵</button>
     <button id="btnStart" class="primary">Start match</button>
     <p id="lobWait" class="msg hidden">Waiting for the host to start…</p>
     <button id="btnLeaveLobby">Leave</button>

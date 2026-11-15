@@ -170,6 +170,21 @@ export class Sim {
     p.bot = true; p.conn = null; p.ai = {}; p.name = BOT_NAMES[id % BOT_NAMES.length];
   }
 
+  switchTeam(id) {
+    if (this.phase !== 'lobby') return false;
+    const p = this.players[id];
+    if (!p) return false;
+    const currentTeam = p.team;
+    const targetTeam = currentTeam ^ 1;
+    const bot = this.players.find((b) => b.team === targetTeam && b.bot);
+    if (!bot) return false;
+    p.team = targetTeam;
+    bot.team = currentTeam;
+    this._lineUp();
+    this.emit('switch', { id, team: targetTeam });
+    return true;
+  }
+
   setHumanState(id, s) {
     const p = this.players[id];
     if (!p || p.bot || !p.alive || s.tp !== p.tp) return;
