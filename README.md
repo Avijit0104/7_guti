@@ -6,6 +6,12 @@ Playable on mobile and desktop browsers with no installation, accounts, or build
 
 ---
 
+### 🌐 Play Live
+- **Cloudflare Pages**: **[https://7-guti.pages.dev](https://7-guti.pages.dev)**
+- **GitHub Pages**: **[https://avijit0104.github.io/7_guti/](https://avijit0104.github.io/7_guti/)**
+
+---
+
 ## 🎮 Game Concept & Rules
 
 **Sat Guti** is played between two teams (Red and Blue), with 2 to 7 players on each side:
@@ -91,6 +97,13 @@ node tools/simtest.js
 # Run stone impact test
 node tools/breaktest.js
 ```
+
+### Deployment
+
+This game requires no build step and can be hosted for free anywhere:
+
+- **Cloudflare Pages**: Connect your GitHub repo (`Avijit0104/7_guti`) on [Cloudflare Pages](https://dash.cloudflare.com/) with framework preset `None` and output directory `/`. Automatic deploys on every push.
+- **GitHub Pages**: Enabled under repository **Settings → Pages** from branch `main` at root `/`.
 
 ---
 

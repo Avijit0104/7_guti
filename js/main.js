@@ -7,7 +7,7 @@ import { Input } from './input.js';
 import { Hud } from './hud.js';
 import { Sim } from './sim.js';
 import { HostNet, GuestNet, makeCode } from './net.js';
-import { sfx, unlockAudio } from './audio.js';
+import { sfx, unlockAudio, toggleMute } from './audio.js';
 import { loadRiggedModels } from './rigged.js';
 
 const $ = (id) => document.getElementById(id);
@@ -207,6 +207,11 @@ $('inCode').addEventListener('keydown', (e) => { if (e.key === 'Enter') joinRoom
 $('btnStart').onclick = () => { if (sim && mode === 'host') { hud.show('game'); input.enabled = true; sim.startMatch(); } };
 $('btnAgain').onclick = () => { if (sim && mode !== 'guest') { hud.show('game'); sim.startMatch(); } };
 $('btnLeaveLobby').onclick = $('btnLeaveRes').onclick = $('btnMenu').onclick = () => leave('');
+$('btnMute').onclick = () => {
+  const m = toggleMute();
+  $('btnMute').textContent = m ? '🔇' : '🔊';
+  $('btnMute').setAttribute('aria-label', m ? 'Unmute sound' : 'Mute sound');
+};
 $('btnCopy').onclick = async () => {
   const url = location.origin + location.pathname + '?room=' + $('lobCode').textContent;
   try { await navigator.clipboard.writeText(url); $('btnCopy').textContent = 'Link copied!'; }

@@ -53,6 +53,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; }
 .pill { position: absolute; top: max(10px, env(safe-area-inset-top)); height: 34px; padding: 0 14px; border-radius: 999px; background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.3); font-size: 13px; font-weight: 700; }
 #btnMenu { right: max(10px, env(safe-area-inset-right)); }
 #btnCam { right: calc(max(10px, env(safe-area-inset-right)) + 78px); }
+#btnMute { right: calc(max(10px, env(safe-area-inset-right)) + 144px); padding: 0 10px; font-size: 15px; }
 .round { position: absolute; width: 68px; height: 68px; border-radius: 50%; background: rgba(0,0,0,.4); border: 2px solid rgba(255,255,255,.55);
   font-size: 12px; font-weight: 800; letter-spacing: .04em; touch-action: none; transition: transform .06s, opacity .15s, background .15s; }
 .round:active { transform: scale(.93); }
