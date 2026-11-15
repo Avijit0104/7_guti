@@ -1,0 +1,11 @@
+{
+  "name": "sat-guti",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Sat Guti (Seven Stones) - 3D multiplayer browser game",
+  "scripts": {
+    "start": "python -m http.server 8080",
+    "simtest": "node tools/simtest.js"
+  }
+}

@@ -1,0 +1,12 @@
+# Excluded notes & logs
+ai.md
+*concept*.txt
+game_concept.txt
+concept.txt
+
+# Editor & OS files
+.claude/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
