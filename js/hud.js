@@ -1,6 +1,7 @@
 // Everything drawn with HTML on top of the 3D view: score, timer, hints, banners, lobby and result screens.
 import { TEAMS } from './config.js';
 import { P } from './view.js';
+import { CHARACTER_NAMES } from './kid.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -45,9 +46,9 @@ export class Hud {
   }
 
   lobby(snap, myId, isHost) {
-    const key = snap.p.map((r) => r[P.NAME] + r[P.TEAM] + (r[P.FLAGS] & 2)).join('|') + myId;
+    const key = snap.p.map((r) => r[P.NAME] + r[P.TEAM] + (r[P.FLAGS] & 2) + '/' + r[P.CHAR]).join('|') + myId;
     this._set('lobby', key, () => {
-      const li = (r) => `<li class="${r[P.FLAGS] & 2 ? 'bot' : ''} ${r[P.ID] === myId ? 'me' : ''}">${esc(r[P.NAME])}${r[P.FLAGS] & 2 ? ' (bot)' : ''}${r[P.ID] === myId ? ' (you)' : ''}</li>`;
+      const li = (r) => `<li class="${r[P.FLAGS] & 2 ? 'bot' : ''} ${r[P.ID] === myId ? 'me' : ''}">${esc(r[P.NAME])}${r[P.FLAGS] & 2 ? ' (bot)' : ''}${r[P.ID] === myId ? ' (you)' : ''}<small class="lob-char">${esc(CHARACTER_NAMES[r[P.CHAR]] || '')}</small></li>`;
       this.el.lobA.innerHTML = snap.p.filter((r) => r[P.TEAM] === 0).map(li).join('');
       this.el.lobB.innerHTML = snap.p.filter((r) => r[P.TEAM] === 1).map(li).join('');
       const me = snap.p.find((r) => r[P.ID] === myId);

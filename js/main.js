@@ -10,6 +10,8 @@ import { HostNet, GuestNet, makeCode } from './net.js';
 import { sfx, unlockAudio, toggleMute } from './audio.js';
 import { loadRiggedModels } from './rigged.js';
 import { glowPulse } from './glow.js';
+import { CHARACTER_NAMES } from './kid.js';
+import { characterPortraits } from './portraits.js';
 
 const $ = (id) => document.getElementById(id);
 const input = new Input();
@@ -166,7 +168,7 @@ function startSolo() {
   requestFullscreenMode();
   unlockAudio(); resetLocal();
   sim = new Sim({ teamSize, onEvent: onSimEvent });
-  myId = sim.addHuman(playerName(), 'local').id;
+  myId = sim.addHuman(playerName(), 'local', myChar).id;
   mode = 'solo';
   hud.show('game'); input.enabled = true;
   sim.startMatch();
@@ -184,7 +186,7 @@ function createRoom() {
         resetLocal();
         hostNet = net;
         sim = new Sim({ teamSize, onEvent: onSimEvent });
-        myId = sim.addHuman(name, 'local').id;
+        myId = sim.addHuman(name, 'local', myChar).id;
         mode = 'host';
         $('lobCode').textContent = code; $('menuMsg').textContent = '';
         hud.show('lobby');
@@ -193,7 +195,7 @@ function createRoom() {
         if (!sim || !m || typeof m !== 'object') return;
         if (m.t === 'hi') {
           if (conn.pid !== undefined) return;
-          const slot = sim.addHuman(m.name, conn.peer);
+          const slot = sim.addHuman(m.name, conn.peer, m.char);
           if (!slot) { net.sendTo(conn, { t: 'full' }); return; }
           conn.pid = slot.id;
           net.sendTo(conn, { t: 'w', id: slot.id, code });
@@ -201,6 +203,7 @@ function createRoom() {
         else if (m.t === 'i') sim.setHumanState(conn.pid, m);
         else if (m.t === 'a') sim.action(conn.pid, m);
         else if (m.t === 'switchTeam') sim.switchTeam(conn.pid);
+        else if (m.t === 'char') sim.setChar(conn.pid, m.c);
       },
       onLeave: (conn) => { if (sim && conn.pid !== undefined) sim.removeHuman(conn.pid); },
       onError: (txt) => { if (mode === 'menu') $('menuMsg').textContent = txt; else hud.feed(txt); },
@@ -217,7 +220,7 @@ function joinRoom(codeRaw) {
   let net;
   try {
     net = new GuestNet(code, {
-      onOpen: () => net.send({ t: 'hi', name }),
+      onOpen: () => net.send({ t: 'hi', name, char: myChar }),
       onData: (m) => {
         if (!m || typeof m !== 'object') return;
         if (m.t === 'w') {
@@ -246,6 +249,48 @@ function leave(msg) {
   hud.show('menu');
   $('menuMsg').textContent = msg || '';
 }
+
+// ---------- character choice ----------
+// Your pick is remembered on this device. Before a match it is sent to the host (or set directly when you host).
+let myChar = 0;
+try { const c = parseInt(localStorage.getItem('sg_char'), 10); if (c >= 0 && c < CHARACTER_NAMES.length) myChar = c; } catch (_) { /* private mode */ }
+let portraits = null;
+function getPortraits() { if (!portraits) portraits = characterPortraits(renderer); return portraits; }
+function showMyChar() {
+  $('charName').textContent = CHARACTER_NAMES[myChar];
+  if (portraits) $('charImg').src = portraits[myChar];
+}
+function chooseChar(c) {
+  myChar = c;
+  try { localStorage.setItem('sg_char', String(c)); } catch (_) { /* private mode */ }
+  if (sim && mode === 'host') sim.setChar(myId, c);
+  else if (guestNet) guestNet.send({ t: 'char', c });
+  showMyChar();
+  for (const el of $('charGrid').children) el.classList.toggle('on', +el.dataset.c === c);
+}
+let pickReturn = 'menu';
+function openPicker() {
+  const pics = getPortraits();
+  const grid = $('charGrid');
+  if (!grid.children.length) {
+    CHARACTER_NAMES.forEach((n, i) => {
+      const b = document.createElement('button');
+      b.className = 'char-card'; b.dataset.c = i;
+      b.innerHTML = `<img alt="" src="${pics[i]}"><span>${n}</span>`;
+      b.onclick = () => chooseChar(i);
+      grid.appendChild(b);
+    });
+  }
+  for (const el of grid.children) el.classList.toggle('on', +el.dataset.c === myChar);
+  pickReturn = hud.screen === 'lobby' ? 'lobby' : 'menu';
+  $('charPick').classList.remove('hidden');
+}
+function closePicker() { $('charPick').classList.add('hidden'); showMyChar(); }
+$('btnChar').onclick = openPicker;
+$('btnLobbyChar').onclick = openPicker;
+$('btnCharDone').onclick = closePicker;
+showMyChar();
+setTimeout(() => { try { getPortraits(); showMyChar(); } catch (err) { console.warn('portraits failed', err); } }, 400);
 
 // ---------- menu wiring ----------
 try { $('inName').value = localStorage.getItem('sg_name') || ''; } catch (_) { /* private mode */ }

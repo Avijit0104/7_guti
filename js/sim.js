@@ -1,7 +1,7 @@
 // The authoritative game. Runs on the host only (solo play = host with no guests).
 // No DOM and no three.js in here, so it can also be run headless in Node for testing.
 import * as CANNON from '../vendor/cannon-es.js';
-import { C, STONES, OBSTACLES, stackY, clampToField, pushOutOfStack, pushOutOfObstacles, handPos, stonesKnocked, rebuildPoints, DEFEND_POINTS, r2, r3 } from './config.js';
+import { C, CHAR_COUNT, STONES, OBSTACLES, stackY, clampToField, pushOutOfStack, pushOutOfObstacles, handPos, stonesKnocked, rebuildPoints, DEFEND_POINTS, r2, r3 } from './config.js';
 import { updateBots } from './bots.js';
 
 const BOT_NAMES = ['Rahim', 'Karim', 'Babu', 'Tuli', 'Mitu', 'Sumon', 'Riya', 'Apu', 'Nila', 'Jamal', 'Shila', 'Rony', 'Mina', 'Tareq'];
@@ -38,7 +38,7 @@ export class Sim {
       this.players.push({
         id: i, name: BOT_NAMES[i % BOT_NAMES.length], team: i % 2, bot: true, conn: null,
         x: 0, y: 0, z: 0, vy: 0, yaw: 0, pitch: 0, mv: 0, vx: 0, vz: 0, px: 0, pz: 0,
-        alive: true, carry: -1, thr: 0, tp: 0, cd: 0, callT: -99, ai: {},
+        alive: true, carry: -1, thr: 0, tp: 0, cd: 0, callT: -99, ai: {}, char: i % CHAR_COUNT,
       });
     }
     this._lineUp();
@@ -153,12 +153,13 @@ export class Sim {
   }
 
   // ---------- humans ----------
-  addHuman(name, conn) {
+  addHuman(name, conn, char = -1) {
     const humans = [0, 1].map((t) => this.players.filter((p) => p.team === t && !p.bot).length);
     const team = humans[0] <= humans[1] ? 0 : 1;
     const slot = this.players.find((p) => p.team === team && p.bot) || this.players.find((p) => p.bot);
     if (!slot) return null;
     slot.bot = false; slot.conn = conn; slot.name = String(name || 'Player').slice(0, 14); slot.mv = 0; slot.ai = {};
+    this.setChar(slot.id, char);
     this.emit('join', { id: slot.id, name: slot.name });
     return slot;
   }
@@ -167,7 +168,17 @@ export class Sim {
     const p = this.players[id];
     if (!p || p.bot) return;
     this.emit('leave', { id, name: p.name });
-    p.bot = true; p.conn = null; p.ai = {}; p.name = BOT_NAMES[id % BOT_NAMES.length];
+    p.bot = true; p.conn = null; p.ai = {}; p.name = BOT_NAMES[id % BOT_NAMES.length]; p.char = id % CHAR_COUNT;
+  }
+
+  // Pick a character. Allowed before a match starts and between matches, not in the middle of one.
+  setChar(id, c) {
+    const p = this.players[id];
+    c = Math.floor(+c);
+    if (!p || !(c >= 0 && c < CHAR_COUNT)) return false;
+    if (this.phase !== 'lobby' && this.phase !== 'matchEnd') return false;
+    p.char = c;
+    return true;
   }
 
   switchTeam(id) {
@@ -526,7 +537,7 @@ export class Sim {
       tm: Math.max(0, Math.ceil(this.phase === 'roundEnd' ? this.phaseT : this.timer)), th: this.thrower, pc: this.placed,
       fl: this.ballInFlight ? 1 : 0, lw: this.lastWinner, ts: this.teamSize, kn: this.knocked,
       p: this.players.map((p) => [p.id, p.team, r2(p.x), r2(p.y), r2(p.z), r2(p.yaw), r2(p.pitch), r2(p.mv),
-        (p.alive ? 1 : 0) | (p.bot ? 2 : 0) | (this.time - p.callT < C.CALL_TIME ? 4 : 0), p.carry, p.thr, p.tp, p.name]),
+        (p.alive ? 1 : 0) | (p.bot ? 2 : 0) | (this.time - p.callT < C.CALL_TIME ? 4 : 0), p.carry, p.thr, p.tp, p.name, p.char]),
       b: [r2(b.position.x), r2(b.position.y), r2(b.position.z), this.ball.holder, this.ball.live ? 1 : 0],
       s: this.stones.map((st) => {
         const q = st.body.quaternion, p = st.body.position;

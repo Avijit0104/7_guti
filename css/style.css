@@ -98,6 +98,19 @@ details { font-size: 13px; opacity: .9; } details ul { margin: 6px 0 0; padding-
 .card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .card-head h1, .card-head h2 { margin: 0; }
 .teams { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.lob-char { display: block; font-size: 11px; opacity: .7; font-weight: 400; color: #fff; margin-top: -4px; }
+/* character choice */
+.charbtn { display: flex; align-items: center; gap: 12px; padding: 6px 12px 6px 6px; border-radius: 12px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.22); text-align: left; }
+.charbtn img { width: 48px; height: 64px; object-fit: cover; border-radius: 8px; background: rgba(255,255,255,.08); }
+.charbtn span { flex: 1; font-size: 12px; opacity: .85; display: flex; flex-direction: column; }
+.charbtn b { font-size: 15px; opacity: 1; color: #ffe066; }
+.charbtn i { font-style: normal; font-size: 13px; font-weight: 700; opacity: .8; }
+#charPick { z-index: 20; }
+.card.wide { width: min(720px, 100%); }
+.char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; overflow: auto; }
+.char-card { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; border-radius: 12px; background: rgba(255,255,255,.07); border: 2px solid transparent; font-size: 12px; font-weight: 600; }
+.char-card img { width: 100%; max-width: 96px; aspect-ratio: 3 / 4; object-fit: cover; }
+.char-card.on { border-color: #ffe066; background: rgba(255,224,102,.16); }
 .team-col { padding: 8px 10px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1.5px solid rgba(255,255,255,.14); cursor: pointer; transition: background .15s, border-color .15s, transform .08s; }
 .team-col:hover { background: rgba(255,255,255,.09); }
 .team-col:active { transform: scale(.98); }

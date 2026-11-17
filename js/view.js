@@ -24,7 +24,7 @@ function callMarker() {
 }
 
 // snapshot player array indexes
-export const P = { ID: 0, TEAM: 1, X: 2, Y: 3, Z: 4, YAW: 5, PITCH: 6, MV: 7, FLAGS: 8, CARRY: 9, THR: 10, TP: 11, NAME: 12 };
+export const P = { ID: 0, TEAM: 1, X: 2, Y: 3, Z: 4, YAW: 5, PITCH: 6, MV: 7, FLAGS: 8, CARRY: 9, THR: 10, TP: 11, NAME: 12, CHAR: 13 };
 
 const lerp = (a, b, t) => a + (b - a) * t;
 function lerpAngle(a, b, t) {
@@ -145,13 +145,13 @@ export class View {
   _char(row) {
     const id = row[P.ID];
     let c = this.chars.get(id);
-    if (c && (c.name !== row[P.NAME] || c.team !== row[P.TEAM])) { this.scene.remove(c.h.group); c.h.dispose(); c = null; }
+    if (c && (c.name !== row[P.NAME] || c.team !== row[P.TEAM] || c.char !== row[P.CHAR])) { this.scene.remove(c.h.group); c.h.dispose(); c = null; }
     if (!c) {
       const team = TEAMS[row[P.TEAM]];
       const Kind = CHARS === 'kaykit' ? (riggedReady() ? RigHuman : Human) : CHARS === 'simple' ? Human : Kid;
-      const h = new Kind({ id, shirt: team.color, name: row[P.NAME], labelCss: team.css });
+      const h = new Kind({ id, outfit: row[P.CHAR] ?? -1, shirt: team.color, name: row[P.NAME], labelCss: team.css });
       this.scene.add(h.group);
-      c = { h, name: row[P.NAME], team: row[P.TEAM] };
+      c = { h, name: row[P.NAME], team: row[P.TEAM], char: row[P.CHAR] };
       this.chars.set(id, c);
     }
     return c.h;

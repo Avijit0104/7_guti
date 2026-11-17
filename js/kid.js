@@ -27,16 +27,19 @@ const BONES = [
 // Darker than they look on paper: the scene's strong sun and tone mapping lighten everything.
 const SKIN = { light: 0xb98560, tan: 0x9e6844, brown: 0x84553a, deep: 0x66402a, dark: 0x4a2e1e };
 const OUTFITS = [
-  { h: 1.3, skin: SKIN.tan, hair: ['short', 0x3a2618], hat: ['bucket', 0x8d8f86], top: ['tee', 0xe2622e, 'short'], graphic: 0x2d5fa8, bottom: ['knee', 0xd8cdb4], shoes: ['sneaker', 0x2e2e2e] },
-  { h: 1.4, skin: SKIN.brown, hair: ['short', 0x2a1a10], top: ['tank', 0xc8322b], number: 0xffffff, bottom: ['short', 0x1f1f24], trim: 0x2f6fd0, shoes: ['sneaker', 0x3a3d48], socks: true },
-  { h: 1.43, skin: SKIN.dark, hair: ['buzz', 0x120c08], top: ['tee', 0x7fb4e0, 'short'], vest: 0x9fd0ee, bottom: ['knee', 0xcdb894], shoes: ['sneaker', 0xf2f2f2], socks: true },
-  { h: 1.36, skin: SKIN.light, hair: ['spiky', 0x6b4a2a], top: ['tank', 0xf1efe8], graphic: 0xd08a3a, bottom: ['short', 0x34465f], shoes: ['sandal', 0x5a4636] },
-  { h: 1.46, skin: SKIN.tan, hair: ['short', 0x4a2e1a], top: ['polo', 0x1d2747, 'short'], stripes: [[0.99, 1.02, 0xf2f2f2], [1.02, 1.04, 0xc0392b]], bottom: ['long', 0xc9b591], shoes: ['shoe', 0x3b2a20] },
-  { h: 1.32, skin: SKIN.deep, hair: ['puffs', 0x120c08], top: ['tee', 0xe85d9a, 'short'], bottom: ['capri', 0x3f5f8f], shoes: ['sneaker', 0xf2f2f2], girl: true },
-  { h: 1.38, skin: SKIN.light, hair: ['bob', 0x7a5232], top: ['tee', 0x5fb35c, 'short'], graphic: 0xe9d76a, bottom: ['short', 0x232327], shoes: ['sneaker', 0x2e2e2e], girl: true },
-  { h: 1.34, skin: SKIN.tan, hair: ['long', 0xc9a066], hat: ['bucket', 0xe36aa0], dress: [0xf3e6c8, 0.47], shoes: ['sandal', 0xb07a50], girl: true },
-  { h: 1.42, skin: SKIN.brown, hair: ['ponytail', 0x2a1a10], top: ['cami', 0x8fb6e6], dress: [0xf5f3ee, 0.5], shoes: ['sandal', 0xd8c4a8], girl: true },
-  { h: 1.31, skin: SKIN.light, hair: ['bob', 0xb8956a], top: ['cami', 0xd13b3b], stripes: [[0.9, 0.92, 0xf6c1c1], [0.97, 0.99, 0xf6c1c1], [1.04, 1.06, 0xf6c1c1]], bottom: ['short', 0xf0e8de], shoes: ['sandal', 0xf2f2f2], girl: true },
+  { name: 'Bucket hat', h: 1.3, skin: SKIN.tan, hair: ['short', 0x3a2618], hat: ['bucket', 0x8d8f86], top: ['tee', 0xe2622e, 'short'], graphic: 0x2d5fa8, bottom: ['knee', 0xd8cdb4], shoes: ['sneaker', 0x2e2e2e] },
+  { name: 'Number 25', h: 1.4, skin: SKIN.brown, hair: ['short', 0x2a1a10], top: ['tank', 0xc8322b], number: 0xffffff, bottom: ['short', 0x1f1f24], trim: 0x2f6fd0, shoes: ['sneaker', 0x3a3d48], socks: true },
+  { name: 'Sky tee', h: 1.43, skin: SKIN.dark, hair: ['buzz', 0x120c08], top: ['tee', 0x7fb4e0, 'short'], vest: 0x9fd0ee, bottom: ['knee', 0xcdb894], shoes: ['sneaker', 0xf2f2f2], socks: true },
+  { name: 'Sandals', h: 1.36, skin: SKIN.light, hair: ['spiky', 0x6b4a2a], top: ['tank', 0xf1efe8], graphic: 0xd08a3a, bottom: ['short', 0x34465f], shoes: ['sandal', 0x5a4636] },
+  { name: 'Polo', h: 1.46, skin: SKIN.tan, hair: ['short', 0x4a2e1a], top: ['polo', 0x1d2747, 'short'], stripes: [[0.99, 1.02, 0xf2f2f2], [1.02, 1.04, 0xc0392b]], bottom: ['long', 0xc9b591], shoes: ['shoe', 0x3b2a20] },
+  { name: 'Puffs', h: 1.32, skin: SKIN.deep, hair: ['puffs', 0x120c08], top: ['tee', 0xe85d9a, 'short'], bottom: ['capri', 0x3f5f8f], shoes: ['sneaker', 0xf2f2f2], girl: true },
+  { name: 'Green tee', h: 1.38, skin: SKIN.light, hair: ['bob', 0x7a5232], top: ['tee', 0x5fb35c, 'short'], graphic: 0xe9d76a, bottom: ['short', 0x232327], shoes: ['sneaker', 0x2e2e2e], girl: true },
+  { name: 'Sundress', h: 1.34, skin: SKIN.tan, hair: ['long', 0xc9a066], hat: ['bucket', 0xe36aa0], dress: [0xf3e6c8, 0.47], shoes: ['sandal', 0xb07a50], girl: true },
+  { name: 'Ponytail', h: 1.42, skin: SKIN.brown, hair: ['ponytail', 0x2a1a10], top: ['cami', 0x8fb6e6], dress: [0xf5f3ee, 0.5], shoes: ['sandal', 0xd8c4a8], girl: true },
+  { name: 'Red stripes', h: 1.31, skin: SKIN.light, hair: ['bob', 0xb8956a], top: ['cami', 0xd13b3b], stripes: [[0.9, 0.92, 0xf6c1c1], [0.97, 0.99, 0xf6c1c1], [1.04, 1.06, 0xf6c1c1]], bottom: ['short', 0xf0e8de], shoes: ['sandal', 0xf2f2f2], girl: true },
+  // A grown-up in festive Bengali dress: white saree with a gold border, gold blouse, gold jewellery, bindi.
+  { name: 'Saree (white & gold)', adult: true, h: 1.52, skin: SKIN.brown, hair: ['longpart', 0x0e0a08], top: ['blouse', 0xb8892f, 'short'],
+    saree: { base: 0xf2ede2, border: 0xc99a2e, pleat: 0xe4dccb }, jewel: 0xd1a53a, bindi: true, shoes: ['sandal', 0x6b4a2c], girl: true },
 ];
 
 // ---------- geometry helpers ----------
@@ -52,9 +55,10 @@ function part(list, geo, color, bone, near = [], band = 0.05, side = null) {
   const cols = new Float32Array(n * 3), si = new Uint16Array(n * 4), sw = new Float32Array(n * 4);
   for (let i = 0; i < n; i++) {
     const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
-    const c = typeof color === 'function' ? color(x, y, z) : color;
-    col.setHex(c);
-    cols[i * 3] = col.r; cols[i * 3 + 1] = col.g; cols[i * 3 + 2] = col.b;
+    if (color !== null) {
+      col.setHex(typeof color === 'function' ? color(x, y, z) : color);
+      cols[i * 3] = col.r; cols[i * 3 + 1] = col.g; cols[i * 3 + 2] = col.b;
+    }
     const ws = [];
     for (const [b, yj, dir, bd = band] of near) ws.push([b, Math.max(0, Math.min(1, 0.5 + dir * (y - yj) / (2 * bd)))]);
     if (side) { // skirts: the lower hem follows the leg on its side a little
@@ -67,7 +71,7 @@ function part(list, geo, color, bone, near = [], band = 0.05, side = null) {
     si[i * 4] = bone; sw[i * 4] = 1 - sum;
     for (let k = 0; k < ws.length && k < 3; k++) { si[i * 4 + 1 + k] = ws[k][0]; sw[i * 4 + 1 + k] = ws[k][1]; }
   }
-  geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+  if (color !== null) geo.setAttribute('color', new THREE.BufferAttribute(cols, 3)); // null: the geometry brought its own colours
   geo.setAttribute('skinIndex', new THREE.BufferAttribute(si, 4));
   geo.setAttribute('skinWeight', new THREE.BufferAttribute(sw, 4));
   list.push(geo);
@@ -97,8 +101,9 @@ function limb(yTop, yBot, rTop, rBot, x, z = 0, seg = 10, rows = 6, round = true
 }
 // The torso: a lathe from crotch to neck, flattened front-to-back. Extra rows sit right at colour edges
 // (waistband, necklines, stripes) so the vertex colours change sharply there.
-function torso(edges) {
-  const prof = [[0, 0.6], [0.08, 0.607], [0.12, 0.635], [0.138, 0.68], [0.144, 0.74], [0.138, 0.8], [0.134, 0.86], [0.14, 0.92], [0.152, 0.98], [0.16, 1.04], [0.156, 1.08], [0.132, 1.11], [0.078, 1.135], [0, 1.142]];
+const ADULT_TORSO = [[0, 0.6], [0.086, 0.607], [0.13, 0.64], [0.152, 0.69], [0.154, 0.75], [0.138, 0.8], [0.116, 0.86], [0.12, 0.9], [0.142, 0.95], [0.153, 0.99], [0.148, 1.04], [0.142, 1.08], [0.124, 1.11], [0.072, 1.135], [0, 1.142]];
+function torso(edges, adult = false) {
+  const prof = adult ? ADULT_TORSO : [[0, 0.6], [0.08, 0.607], [0.12, 0.635], [0.138, 0.68], [0.144, 0.74], [0.138, 0.8], [0.134, 0.86], [0.14, 0.92], [0.152, 0.98], [0.16, 1.04], [0.156, 1.08], [0.132, 1.11], [0.078, 1.135], [0, 1.142]];
   const rAt = (y) => {
     for (let i = 1; i < prof.length; i++) if (y <= prof[i][1]) { const a = prof[i - 1], b = prof[i]; return a[0] + (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]); }
     return 0;
@@ -117,18 +122,63 @@ function shell(r0, r1, y0, y1, gap, z = 0.012) {
   return g;
 }
 
+// A flat band of cloth following a path over the body (the saree's pallu). The outer face has extra
+// columns near both long edges so the border colour stays a crisp stripe.
+function ribbon(points, width, thick, base, border) {
+  const curve = new THREE.CatmullRomCurve3(points.map((q) => new THREE.Vector3(q[0], q[1], q[2])));
+  const N = 30, U = [0, 0.1, 0.11, 0.89, 0.9, 1];
+  const pos = [], cols = [], idx = [];
+  const t = new THREE.Vector3(), n = new THREE.Vector3(), sd = new THREE.Vector3(), q = new THREE.Vector3();
+  const cBase = new THREE.Color(base), cBorder = new THREE.Color(border);
+  const frames = [];
+  for (let i = 0; i <= N; i++) {
+    const p = curve.getPointAt(i / N);
+    curve.getTangentAt(i / N, t);
+    n.set(p.x, Math.max(0, p.y - 1.06) * 14, p.z / 0.74).normalize(); // outward from the body; upward over the shoulder
+    sd.crossVectors(t, n).normalize();
+    n.crossVectors(sd, t).normalize();
+    frames.push([p.clone(), n.clone(), sd.clone()]);
+  }
+  const face = (off, us, outer) => {
+    const first = pos.length / 3;
+    for (const [p, nn, ss] of frames) for (const u of us) {
+      q.copy(p).addScaledVector(nn, off).addScaledVector(ss, (u - 0.5) * width);
+      pos.push(q.x, q.y, q.z);
+      const c = u < 0.105 || u > 0.895 ? cBorder : cBase;
+      cols.push(c.r, c.g, c.b);
+    }
+    const W = us.length;
+    for (let i = 0; i < N; i++) for (let j = 0; j < W - 1; j++) {
+      const a = first + i * W + j, b = a + W, c = a + 1, d = b + 1;
+      if (outer) idx.push(a, c, b, c, d, b); else idx.push(a, b, c, c, b, d);
+    }
+  };
+  face(0.012 + thick, U, true);
+  face(0.012, [0, 1], false);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+  g.setIndex(idx);
+  g.computeVertexNormals();
+  return g;
+}
+
 function buildKid(o) {
   const L = [];
   const skin = o.skin, top = o.top || ['tee', 0xffffff, 'short'], dress = o.dress;
   const topCol = dress && !o.top ? dress[0] : top[1];
   const botCol = o.bottom ? o.bottom[1] : dress ? dress[0] : 0x333333;
   const lips = 0x9a4f45, dark = 0x2a1d16, white = 0xf4f1ea;
+  // head parts: a grown-up's head is smaller compared to the body than a child's
+  const headPart = (g, c) => { if (o.adult) { g.translate(0, -1.2, 0); g.scale(0.87, 0.87, 0.87); g.translate(0, 1.2, 0); } part(L, g, c, B.HEAD); };
+  const sar = o.saree;
 
   // ---- torso: bottoms below the waistband, top above, skin at the neckline for tanks / camis
   const neckLine = top[0] === 'tank' ? 1.075 : top[0] === 'cami' ? 1.06 : 1.115;
   const stripes = o.stripes || [];
-  const edges = [0.8, neckLine, ...stripes.flatMap((s) => [s[0], s[1]])];
-  part(L, torso(edges), (x, y, z) => {
+  const edges = sar ? [0.845, 0.9, 1.065] : [0.8, neckLine, ...stripes.flatMap((s) => [s[0], s[1]])];
+  part(L, torso(edges, o.adult), (x, y, z) => {
+    if (sar) return y > 1.065 ? skin : y > 0.9 ? topCol : y > 0.845 ? skin : sar.base;
     if (y > neckLine) return skin;
     for (const s of stripes) if (y > s[0] && y < s[1]) return s[2];
     if (o.vest && y > 0.8 && z < -0.03 && Math.abs(x) > 0.035 && Math.abs(x) < 0.12) return o.vest;
@@ -150,48 +200,74 @@ function buildKid(o) {
 
   // ---- neck and head
   part(L, limb(1.2, 1.09, 0.04, 0.043, 0), skin, B.NECK, [[B.CHEST, Y.NECK, -1, 0.03]]);
-  part(L, sphere(0.098, 0.113, 0.104, 0, 1.275, 0.004, 16, 12), skin, B.HEAD);
-  part(L, sphere(0.064, 0.055, 0.064, 0, 1.22, -0.014, 12, 8), skin, B.HEAD); // jaw
+  headPart(sphere(0.098, 0.113, 0.104, 0, 1.275, 0.004, 16, 12), skin);
+  headPart(sphere(0.064, 0.055, 0.064, 0, 1.22, -0.014, 12, 8), skin); // jaw
   for (const sx of [-1, 1]) {
-    part(L, sphere(0.017, 0.029, 0.021, sx * 0.097, 1.268, 0.012, 8, 6), skin, B.HEAD); // ears
-    part(L, sphere(0.02, 0.014, 0.009, sx * 0.036, 1.287, -0.093, 10, 6), white, B.HEAD); // eyes
-    part(L, sphere(0.0105, 0.0115, 0.005, sx * 0.036, 1.287, -0.1, 8, 6), dark, B.HEAD);
-    part(L, box(0.032, 0.007, 0.008, sx * 0.037, 1.311, -0.095), o.hair[1], B.HEAD); // brows
+    headPart(sphere(0.017, 0.029, 0.021, sx * 0.097, 1.268, 0.012, 8, 6), skin); // ears
+    headPart(sphere(0.02, 0.014, 0.009, sx * 0.036, 1.287, -0.093, 10, 6), white); // eyes
+    headPart(sphere(0.0105, 0.0115, 0.005, sx * 0.036, 1.287, -0.1, 8, 6), dark);
+    headPart(box(0.032, 0.007, 0.008, sx * 0.037, 1.311, -0.095), o.hair[1]); // brows
   }
-  part(L, sphere(0.011, 0.017, 0.013, 0, 1.262, -0.104, 8, 6), skin, B.HEAD); // nose
-  part(L, sphere(0.023, 0.006, 0.006, 0, 1.226, -0.093, 10, 4), lips, B.HEAD); // mouth
+  headPart(sphere(0.011, 0.017, 0.013, 0, 1.262, -0.104, 8, 6), skin); // nose
+  headPart(sphere(0.023, 0.006, 0.006, 0, 1.226, -0.093, 10, 4), lips); // mouth
 
   // ---- hair
   const [hs, hc] = o.hair;
   const cap = (s = 1) => { const g = new THREE.SphereGeometry(1, 16, 9, 0, Math.PI * 2, 0, Math.PI * 0.56); g.scale(0.106 * s, 0.103 * s, 0.112 * s); g.rotateX(0.32); g.translate(0, 1.282, 0.006); return g; };
-  part(L, cap(hs === 'buzz' ? 0.975 : 1), hc, B.HEAD);
-  if (hs === 'short' || hs === 'spiky') part(L, sphere(0.07, 0.022, 0.03, 0, 1.338, -0.082, 10, 6), hc, B.HEAD); // fringe
+  headPart(cap(hs === 'buzz' ? 0.975 : 1), hc);
+  if (hs === 'short' || hs === 'spiky') headPart(sphere(0.07, 0.022, 0.03, 0, 1.338, -0.082, 10, 6), hc); // fringe
   if (hs === 'spiky') for (let k = 0; k < 6; k++) {
     const g = new THREE.ConeGeometry(0.026, 0.06, 5); g.rotateX(-0.3 + (k % 3) * 0.3); g.rotateZ((k < 3 ? -1 : 1) * 0.35); g.translate((k < 3 ? -1 : 1) * 0.035, 1.39, -0.04 + (k % 3) * 0.045);
-    part(L, g, hc, B.HEAD);
+    headPart(g, hc);
   }
-  if (hs === 'bob') part(L, shell(0.117, 0.112, 1.205, 1.32, 0.95), hc, B.HEAD);
-  if (hs === 'long') part(L, shell(0.12, 0.112, 1.03, 1.32, 0.9, 0.02), hc, B.HEAD);
+  if (hs === 'bob') headPart(shell(0.117, 0.112, 1.205, 1.32, 0.95), hc);
+  if (hs === 'longpart') {
+    headPart(shell(0.122, 0.112, 0.95, 1.33, 1.05, 0.03), hc);
+    for (const sx of [-1, 1]) { const g = new THREE.SphereGeometry(1, 10, 8); g.scale(0.018, 0.1, 0.026); g.rotateZ(sx * 0.1); g.translate(sx * 0.098, 1.22, -0.045); headPart(g, hc); }
+  }
+  if (hs === 'long') headPart(shell(0.12, 0.112, 1.03, 1.32, 0.9, 0.02), hc);
   if (hs === 'ponytail') {
-    part(L, sphere(0.032, 0.03, 0.03, 0, 1.31, 0.112, 8, 6), hc, B.HEAD);
+    headPart(sphere(0.032, 0.03, 0.03, 0, 1.31, 0.112, 8, 6), hc);
     const g = new THREE.SphereGeometry(1, 10, 8); g.scale(0.036, 0.11, 0.034); g.rotateX(0.35); g.translate(0, 1.21, 0.14);
-    part(L, g, hc, B.HEAD);
+    headPart(g, hc);
   }
-  if (hs === 'puffs') for (const sx of [-1, 1]) part(L, sphere(0.047, 0.045, 0.045, sx * 0.088, 1.33, 0.035, 10, 8), hc, B.HEAD);
+  if (hs === 'puffs') for (const sx of [-1, 1]) headPart(sphere(0.047, 0.045, 0.045, sx * 0.088, 1.33, 0.035, 10, 8), hc);
 
   // ---- hats
   if (o.hat) {
     const [ht, hcol] = o.hat;
     if (ht === 'cap') {
-      part(L, sphere(0.109, 0.078, 0.115, 0, 1.31, 0.006, 14, 7), hcol, B.HEAD);
+      headPart(sphere(0.109, 0.078, 0.115, 0, 1.31, 0.006, 14, 7), hcol);
       const brim = new THREE.CylinderGeometry(0.075, 0.075, 0.008, 14); brim.scale(1, 1, 1.25); brim.translate(0, 1.315, -0.1);
-      part(L, brim, hcol, B.HEAD);
+      headPart(brim, hcol);
     } else {
       const crown = new THREE.CylinderGeometry(0.093, 0.114, 0.085, 16, 1); crown.translate(0, 1.345, 0.004);
-      part(L, crown, hcol, B.HEAD);
+      headPart(crown, hcol);
       const brim = new THREE.CylinderGeometry(0.118, 0.175, 0.045, 18, 1, true); brim.translate(0, 1.29, 0.004);
-      part(L, brim, hcol, B.HEAD);
+      headPart(brim, hcol);
     }
+  }
+
+  // ---- festive dress: bindi, earrings, necklace, saree with pallu over the left shoulder
+  if (o.bindi) headPart(sphere(0.0085, 0.0085, 0.004, 0, 1.322, -0.097, 8, 6), 0xc0141c);
+  if (o.jewel) {
+    for (const sx of [-1, 1]) headPart(sphere(0.012, 0.016, 0.012, sx * 0.099, 1.233, 0.008, 8, 6), o.jewel);
+    const nk = new THREE.TorusGeometry(0.072, 0.011, 6, 20); nk.rotateX(Math.PI / 2); nk.rotateX(-0.5); nk.scale(1, 1, 0.86); nk.translate(0, 1.1, -0.012);
+    part(L, nk, o.jewel, B.CHEST);
+    part(L, sphere(0.022, 0.028, 0.01, 0, 1.072, -0.114, 10, 8), o.jewel, B.CHEST);
+    part(L, sphere(0.008, 0.008, 0.006, 0, 1.072, -0.124, 6, 5), 0xa0202a, B.CHEST);
+  }
+  if (sar) {
+    const g = new THREE.CylinderGeometry(0.15, 0.205, 0.81, 22, 10, true);
+    g.scale(1, 1, 0.86); g.translate(0, 0.455, 0);
+    part(L, g, (x, y, z) => {
+      if (y < 0.11 || (y > 0.13 && y < 0.145)) return sar.border;
+      if (z < -0.06 && Math.abs(x) < 0.07) return Math.floor((x + 0.07) / 0.0175) % 2 ? sar.pleat : sar.base; // front pleats
+      return sar.base;
+    }, B.HIPS, [[B.SPINE, 0.82, 1, 0.03]], 0.05, { y0: 0.72, span: 0.67, l: B.THL, r: B.THR });
+    // pallu: from the right hip, across the chest, over the left shoulder, down the back
+    part(L, ribbon([[0.135, 0.83, -0.11], [0.07, 0.93, -0.122], [-0.03, 1.03, -0.122], [-0.11, 1.105, -0.075], [-0.14, 1.14, 0.0],
+      [-0.13, 1.1, 0.09], [-0.115, 0.95, 0.12], [-0.1, 0.72, 0.14], [-0.09, 0.55, 0.15]], 0.19, 0.006, sar.base, sar.border), null, B.CHEST);
   }
 
   // ---- arms: skin, then sleeves over the top
@@ -201,8 +277,13 @@ function buildKid(o) {
     part(L, limb(Y.SH + 0.01, Y.EL, 0.05, 0.04, x), skin, SH, [[B.CHEST, Y.SH - 0.02, 1, 0.03], [EL, Y.EL, -1, 0.04]]);
     part(L, limb(Y.EL, Y.WR + 0.01, 0.04, 0.032, x), skin, EL, [[SH, Y.EL, 1, 0.04]]);
     part(L, sphere(0.036, 0.048, 0.03, x, Y.WR - 0.04, -0.004, 10, 8), skin, WR);
+    if (o.jewel) for (let b = 0; b < 6; b++) { // a stack of bangles on each wrist
+      const t = new THREE.TorusGeometry(0.037, 0.0055, 5, 14); t.rotateX(Math.PI / 2); t.translate(x, 0.735 + b * 0.0115, 0);
+      part(L, t, b === 0 || b === 5 ? 0xf3efe6 : b % 2 ? o.jewel : 0xb5452a, EL);
+    }
     if (sleeve) {
       part(L, limb(Y.SH + 0.02, sleeve === 'long' ? Y.EL : 0.99, 0.059, 0.05, x, 0, 10, 3, false), topCol, SH, [[B.CHEST, Y.SH - 0.02, 1, 0.03], [EL, Y.EL, -1, 0.04]]);
+      if (sar) part(L, limb(1.0, 0.985, 0.052, 0.051, x, 0, 10, 1, false), sar.border, SH); // gold edge on the blouse sleeve
       if (sleeve === 'long') part(L, limb(Y.EL, 0.74, 0.054, 0.045, x, 0, 10, 3, false), topCol, EL, [[SH, Y.EL, 1, 0.04]]);
     }
   }
@@ -256,12 +337,14 @@ function teamMaterial(color) {
   return matCache.get(color);
 }
 export const KID_COUNT = OUTFITS.length;
+export const CHARACTER_NAMES = OUTFITS.map((o) => o.name);
 
 const damp = (cur, target, k) => cur + (target - cur) * k;
 
 export class Kid {
-  constructor({ id = 0, shirt = 0xe2483d, name = '', labelCss = '#fff' }) {
-    const oi = id % OUTFITS.length, o = OUTFITS[oi];
+  constructor({ id = 0, outfit = -1, shirt = 0xe2483d, name = '', labelCss = '#fff' }) {
+    const oi = outfit >= 0 ? outfit % OUTFITS.length : id % OUTFITS.length, o = OUTFITS[oi];
+    this.outfit = oi;
     this.group = new THREE.Group();
     const scale = this.scale = o.h / 1.4;
 

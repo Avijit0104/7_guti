@@ -34,6 +34,9 @@ export const C = {
   SNAP_HZ: 20,
 };
 
+// Number of selectable characters (js/kid.js has the list). Kept here so the game logic needs no 3D code.
+export const CHAR_COUNT = 11;
+
 export const TEAMS = [
   { name: 'Red', color: 0xe2483d, css: '#ff5a4d' },
   { name: 'Blue', color: 0x2f7fe0, css: '#4a9bff' },

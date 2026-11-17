@@ -6,7 +6,7 @@ import * as THREE from '../vendor/three.module.min.js';
 export const glowPulse = { value: 1 }; // shared by every character; main loop animates it gently
 
 // Adds the rim glow to a MeshLambertMaterial or MeshStandardMaterial.
-export function addTeamGlow(mat, color, strength = 1.15) {
+export function addTeamGlow(mat, color, strength = 0.9) {
   const uColor = { value: new THREE.Color(color) };
   const uStrength = { value: strength };
   mat.onBeforeCompile = (sh) => {
@@ -18,7 +18,7 @@ export function addTeamGlow(mat, color, strength = 1.15) {
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
   {
     float facing = clamp(dot(normalize(normal), normalize(vViewPosition)), 0.0, 1.0);
-    float rim = pow(1.0 - facing, 3.0);
+    float rim = pow(1.0 - facing, 3.4);
     totalEmissiveRadiance += uGlowColor * rim * 1.9 * uGlowStrength * uGlowPulse;
   }`);
   };

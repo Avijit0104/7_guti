@@ -57,6 +57,7 @@
       <span>Players per team</span>
       <div id="sizes" class="seg"><button data-n="2">2</button><button data-n="3" class="on">3</button><button data-n="4">4</button><button data-n="5">5</button><button data-n="6">6</button><button data-n="7">7</button></div>
     </div>
+    <button id="btnChar" class="charbtn" aria-label="Choose your character"><img id="charImg" alt=""><span>Your character<b id="charName">-</b></span><i>Change ▸</i></button>
     <button id="btnSolo" class="primary">Play now (with bots)</button>
     <button id="btnCreate">Create a room for friends</button>
     <div class="row join">
@@ -92,10 +93,20 @@
       <div id="lobTeamA" class="team-col" title="Click to join Red team"><h3 class="red">Red</h3><ul id="lobA"></ul></div>
       <div id="lobTeamB" class="team-col" title="Click to join Blue team"><h3 class="blue">Blue</h3><ul id="lobB"></ul></div>
     </div>
+    <button id="btnLobbyChar">Change character</button>
     <button id="btnSwitchTeam" class="secondary">Switch to Blue Team 🔵</button>
     <button id="btnStart" class="primary">Start match</button>
     <p id="lobWait" class="msg hidden">Waiting for the host to start…</p>
     <button id="btnLeaveLobby">Leave</button>
+  </div>
+</div>
+
+<!-- character picker -->
+<div id="charPick" class="screen hidden">
+  <div class="card wide">
+    <h2>Choose your character</h2>
+    <div id="charGrid" class="char-grid"></div>
+    <button id="btnCharDone" class="primary">Done</button>
   </div>
 </div>
 
