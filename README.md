@@ -7,7 +7,7 @@ Playable on mobile and desktop browsers with no installation, accounts, or build
 ---
 
 ### 🌐 Play Live
-- **Cloudflare Pages**: **[https://7-guti.pages.dev](https://7-guti.pages.dev)**
+- **Cloudflare**: **[https://7-guti.avibose000.workers.dev](https://7-guti.avibose000.workers.dev)**
 - **GitHub Pages**: **[https://avijit0104.github.io/7_guti/](https://avijit0104.github.io/7_guti/)**
 
 ---
@@ -102,7 +102,7 @@ node tools/breaktest.js
 
 This game requires no build step and can be hosted for free anywhere:
 
-- **Cloudflare Pages**: Connect your GitHub repo (`Avijit0104/7_guti`) on [Cloudflare Pages](https://dash.cloudflare.com/) with framework preset `None` and output directory `/`. Automatic deploys on every push.
+- **Cloudflare**: the GitHub repo (`Avijit0104/7_guti`) is connected in the [Cloudflare dashboard](https://dash.cloudflare.com/) (Workers & Pages) and served at `7-guti.avibose000.workers.dev`. Every push to `main` deploys automatically.
 - **GitHub Pages**: Enabled under repository **Settings → Pages** from branch `main` at root `/`.
 
 ---
