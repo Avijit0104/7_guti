@@ -1,7 +1,7 @@
 // Everything drawn with HTML on top of the 3D view: score, timer, hints, banners, lobby and result screens.
 import { TEAMS } from './config.js';
 import { P } from './view.js';
-import { CHARACTER_NAMES } from './kid.js';
+import { CHARACTER_NAMES } from './cast.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -93,7 +93,7 @@ export class Hud {
     if (me) {
       if (snap.ph === 'throw') {
         if (snap.th === myId) role = hasBall ? 'Your throw! Harder hit = more stones down = more points' : 'Good throw?';
-        else role = attack ? 'Your team-mate is throwing' : 'Defend: be ready to chase the ball';
+        else role = attack ? 'Team-mate throwing: stay behind the throw line until the stack is hit' : 'Stay behind your line until the stack is hit, then get the ball';
       } else if (snap.ph === 'scramble') {
         if (!alive) role = 'You are out — watching your team';
         else if (attack) {

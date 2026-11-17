@@ -32,7 +32,7 @@ function grassTexture() {
 }
 
 function fieldTexture(W, H) {
-  const ppm = 24, w = Math.round(W * ppm), h = Math.round(H * ppm);
+  const ppm = 15, w = Math.round(W * ppm), h = Math.round(H * ppm); // 15 px per metre keeps the big field texture phone-friendly
   const r = rng(11);
   return canvasTex(w, h, (g) => {
     g.clearRect(0, 0, w, h);
@@ -51,7 +51,11 @@ function fieldTexture(W, H) {
     const X = (x) => (x + W / 2) * ppm, Z = (z) => (z + H / 2) * ppm;
     g.strokeStyle = 'rgba(255,252,240,0.85)'; g.lineWidth = 4; g.lineCap = 'round';
     g.strokeRect(X(-C.FIELD_X), Z(-C.FIELD_Z), C.FIELD_X * 2 * ppm, C.FIELD_Z * 2 * ppm);
-    g.beginPath(); g.moveTo(X(-5), Z(C.THROW_Z)); g.lineTo(X(5), Z(C.THROW_Z)); g.stroke();
+    // throw line (attackers) and defence line (defenders) run the full width: nobody crosses them until the stack is hit
+    g.lineWidth = 6;
+    g.beginPath(); g.moveTo(X(-C.FIELD_X), Z(C.THROW_Z)); g.lineTo(X(C.FIELD_X), Z(C.THROW_Z)); g.stroke();
+    g.beginPath(); g.moveTo(X(-C.FIELD_X), Z(-C.DEF_LINE)); g.lineTo(X(C.FIELD_X), Z(-C.DEF_LINE)); g.stroke();
+    g.lineWidth = 4;
     g.lineWidth = 3; g.setLineDash([10, 9]);
     g.beginPath(); g.arc(X(0), Z(0), C.BASE_R * ppm, 0, 7); g.stroke();
     g.setLineDash([]);
@@ -90,7 +94,7 @@ function sky() {
 export function buildWorld(scene, quality) {
   const r = rng(2024);
   scene.background = new THREE.Color(0xf6e3bd);
-  scene.fog = new THREE.Fog(0xeedfc0, 55, 300);
+  scene.fog = new THREE.Fog(0xeedfc0, 80, 380);
   scene.add(sky());
 
   // lights
@@ -154,9 +158,9 @@ export function buildWorld(scene, quality) {
     }
   };
   const nPalm = quality.low ? 9 : 16, nTree = quality.low ? 12 : 22;
-  tryPlace(30, 72, nPalm);
+  tryPlace(C.FIELD_X + 6, C.FIELD_X + 50, nPalm);
   const palms = spots.slice();
-  tryPlace(32, 100, nTree);
+  tryPlace(C.FIELD_X + 8, C.FIELD_X + 75, nTree);
   const trees = spots.slice(palms.length);
 
   const trunkMat = new THREE.MeshLambertMaterial({ color: 0x7a5a3a });

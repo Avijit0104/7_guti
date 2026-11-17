@@ -109,7 +109,8 @@ This game requires no build step and can be hosted for free anywhere:
 
 ## 📜 Credits & License
 
-- Character models: [KayKit Character Pack](https://kaylousberg.itch.io/) (CC0 - Public Domain).
+- Character models: built from [Quaternius Universal Base Characters](https://quaternius.itch.io/universal-base-characters) and animated with the [Quaternius Universal Animation Library](https://quaternius.itch.io/universal-animation-library) (both CC0 - Public Domain); clothes, saree and jewellery made with Blender scripts in `tools/blender/`.
+- Older character option (`?chars=kaykit`): [KayKit Character Pack](https://kaylousberg.itch.io/) (CC0 - Public Domain).
 - Physics: [cannon-es](https://github.com/pmndrs/cannon-es) (MIT).
 - 3D Engine: [three.js](https://threejs.org/) (MIT).
 - Multiplayer: [PeerJS](https://peerjs.com/) (MIT).

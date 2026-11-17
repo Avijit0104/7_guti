@@ -1,9 +1,11 @@
 // The authoritative game. Runs on the host only (solo play = host with no guests).
 // No DOM and no three.js in here, so it can also be run headless in Node for testing.
 import * as CANNON from '../vendor/cannon-es.js';
-import { C, CHAR_COUNT, STONES, OBSTACLES, stackY, clampToField, pushOutOfStack, pushOutOfObstacles, handPos, stonesKnocked, rebuildPoints, DEFEND_POINTS, r2, r3 } from './config.js';
+import { C, CHAR_COUNT, clampToLine, STONES, OBSTACLES, stackY, clampToField, pushOutOfStack, pushOutOfObstacles, handPos, stonesKnocked, rebuildPoints, DEFEND_POINTS, r2, r3 } from './config.js';
 import { updateBots } from './bots.js';
 
+// Bots never take character 0 (Kanu): she is only for human players.
+const botChar = (i) => 1 + (i % (CHAR_COUNT - 1));
 const BOT_NAMES = ['Rahim', 'Karim', 'Babu', 'Tuli', 'Mitu', 'Sumon', 'Riya', 'Apu', 'Nila', 'Jamal', 'Shila', 'Rony', 'Mina', 'Tareq'];
 const G_GROUND = 1, G_BALL = 2, G_STONE = 4;
 
@@ -38,7 +40,7 @@ export class Sim {
       this.players.push({
         id: i, name: BOT_NAMES[i % BOT_NAMES.length], team: i % 2, bot: true, conn: null,
         x: 0, y: 0, z: 0, vy: 0, yaw: 0, pitch: 0, mv: 0, vx: 0, vz: 0, px: 0, pz: 0,
-        alive: true, carry: -1, thr: 0, tp: 0, cd: 0, callT: -99, ai: {}, char: i % CHAR_COUNT,
+        alive: true, carry: -1, thr: 0, tp: 0, cd: 0, callT: -99, ai: {}, char: botChar(i),
       });
     }
     this._lineUp();
@@ -168,7 +170,7 @@ export class Sim {
     const p = this.players[id];
     if (!p || p.bot) return;
     this.emit('leave', { id, name: p.name });
-    p.bot = true; p.conn = null; p.ai = {}; p.name = BOT_NAMES[id % BOT_NAMES.length]; p.char = id % CHAR_COUNT;
+    p.bot = true; p.conn = null; p.ai = {}; p.name = BOT_NAMES[id % BOT_NAMES.length]; p.char = botChar(id);
   }
 
   // Pick a character. Allowed before a match starts and between matches, not in the middle of one.
@@ -179,6 +181,12 @@ export class Sim {
     if (this.phase !== 'lobby' && this.phase !== 'matchEnd') return false;
     p.char = c;
     return true;
+  }
+
+  // Until the ball touches the stack nobody may cross their line (see config.clampToLine).
+  _lineRule(p) {
+    if (this.phase !== 'throw') return;
+    clampToLine(p, p.team === this.attackTeam ? 'attack' : 'defend');
   }
 
   switchTeam(id) {
@@ -203,6 +211,7 @@ export class Sim {
     p.x = s.x; p.z = s.z; p.y = Math.max(0, Math.min(3, s.y));
     p.yaw = s.yaw; p.pitch = s.pitch; p.mv = Math.max(0, Math.min(1, s.mv || 0));
     clampToField(p);
+    this._lineRule(p);
   }
 
   action(id, a) {
@@ -422,7 +431,7 @@ export class Sim {
     }
 
     updateBots(this, dt);
-    for (const p of this.players) if (p.bot) { clampToField(p); pushOutOfStack(p); pushOutOfObstacles(p); }
+    for (const p of this.players) if (p.bot) { clampToField(p); pushOutOfStack(p); pushOutOfObstacles(p); this._lineRule(p); }
 
     const ball = this.ball, bb = ball.body;
     if (this.phase === 'throw') {

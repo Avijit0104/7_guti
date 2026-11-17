@@ -10,3 +10,7 @@ concept.txt
 .idea/
 .DS_Store
 Thumbs.db
+
+# Large downloaded source packs and intermediate builds (rebuild with tools/blender/build_characters.py)
+models_src/quaternius/
+models_src/built/

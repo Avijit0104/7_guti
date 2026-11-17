@@ -111,6 +111,8 @@ details { font-size: 13px; opacity: .9; } details ul { margin: 6px 0 0; padding-
 .char-card { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; border-radius: 12px; background: rgba(255,255,255,.07); border: 2px solid transparent; font-size: 12px; font-weight: 600; }
 .char-card img { width: 100%; max-width: 96px; aspect-ratio: 3 / 4; object-fit: cover; }
 .char-card.on { border-color: #ffe066; background: rgba(255,224,102,.16); }
+.char-card.star { background: linear-gradient(180deg, rgba(255,214,102,.22), rgba(255,255,255,.06)); }
+.char-card.star span { color: #ffd86b; }
 .team-col { padding: 8px 10px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1.5px solid rgba(255,255,255,.14); cursor: pointer; transition: background .15s, border-color .15s, transform .08s; }
 .team-col:hover { background: rgba(255,255,255,.09); }
 .team-col:active { transform: scale(.98); }

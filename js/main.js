@@ -10,7 +10,8 @@ import { HostNet, GuestNet, makeCode } from './net.js';
 import { sfx, unlockAudio, toggleMute } from './audio.js';
 import { loadRiggedModels } from './rigged.js';
 import { glowPulse } from './glow.js';
-import { CHARACTER_NAMES } from './kid.js';
+import { CHARACTER_NAMES, CAST } from './cast.js';
+import { loadPeople } from './person.js';
 import { characterPortraits } from './portraits.js';
 
 const $ = (id) => document.getElementById(id);
@@ -276,7 +277,8 @@ function openPicker() {
     CHARACTER_NAMES.forEach((n, i) => {
       const b = document.createElement('button');
       b.className = 'char-card'; b.dataset.c = i;
-      b.innerHTML = `<img alt="" src="${pics[i]}"><span>${n}</span>`;
+      b.innerHTML = `<img alt="" src="${pics[i]}"><span>${CAST[i].star ? '★ ' : ''}${n}</span>`;
+      if (CAST[i].star) b.classList.add('star');
       b.onclick = () => chooseChar(i);
       grid.appendChild(b);
     });
@@ -358,6 +360,7 @@ function controlLocal(dt) {
   const mult = hasBall && ph === 'scramble' ? C.BALL_MULT : row[P.CARRY] >= 0 ? C.STONE_MULT : 1;
   stepLocal(me, inp.mx, inp.my, inp.jump, dt, {
     mult, frozen: !alive || ph === 'lobby' || ph === 'matchEnd', zone: ph === 'throw' && snap.th === myId,
+    line: ph === 'throw' ? (row[P.TEAM] === snap.at ? 'attack' : 'defend') : null,
   });
 
   if (hasBall && alive) {
@@ -464,6 +467,14 @@ hud.show('menu');
 // The rigged characters load in the background; the game is playable with the built-in figures meanwhile.
 // The KayKit models are only downloaded when asked for with ?chars=kaykit (the village kids are built in code).
 if (new URLSearchParams(location.search).get('chars') === 'kaykit') loadRiggedModels().then((ok) => { if (ok) view.rebuildCharacters(); });
+// The human characters (about 4 MB) load in the background; the code-built figures stand in until then.
+else if (!new URLSearchParams(location.search).get('chars')) loadPeople().then((ok) => {
+  if (!ok) return;
+  view.rebuildCharacters();
+  portraits = null; // redraw the picker portraits with the real characters
+  if (!$('charPick').classList.contains('hidden')) { $('charGrid').innerHTML = ''; openPicker(); }
+  try { getPortraits(); showMyChar(); } catch (err) { console.warn('portraits failed', err); }
+});
 requestAnimationFrame(frame);
 
 // for debugging in the browser console

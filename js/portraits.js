@@ -1,12 +1,12 @@
 // Portraits for the character picker: each character is rendered once, off screen, with the game's own
 // renderer and kept as an image. No image files are needed.
 import * as THREE from '../vendor/three.module.min.js';
-import { Kid, KID_COUNT } from './kid.js';
-
-let cache = null;
+import { Kid } from './kid.js';
+import { Person, peopleReady } from './person.js';
+import { CAST } from './cast.js';
 
 export function characterPortraits(renderer, w = 168, h = 224) {
-  if (cache) return cache;
+  let cache;
   const scene = new THREE.Scene();
   scene.add(new THREE.HemisphereLight(0xe8f1ff, 0x8a7550, 1.6));
   const sun = new THREE.DirectionalLight(0xfff2dc, 2.2);
@@ -25,13 +25,14 @@ export function characterPortraits(renderer, w = 168, h = 224) {
   renderer.setClearColor(0x000000, 0);
 
   cache = [];
-  for (let i = 0; i < KID_COUNT; i++) {
-    const kid = new Kid({ outfit: i, shirt: 0xffc14d, name: '' });
+  const real = peopleReady();
+  for (let i = 0; i < CAST.length; i++) {
+    const kid = real ? new Person({ outfit: i, shirt: 0xffc14d, name: '' }) : new Kid({ outfit: CAST[i].kid, shirt: 0xffc14d, name: '' });
     kid.label.visible = false; kid.glow.visible = false;
     kid.group.rotation.y = Math.PI - 0.32; // turn to face the camera, slightly to one side
     for (let f = 0; f < 3; f++) kid.update(1 / 60, { mv: 0, air: false, carry: false, ball: false, alive: true, thr: 0, pitch: 0 });
     scene.add(kid.group);
-    const top = 1.4 * kid.scale;
+    const top = real ? CAST[i].h : 1.4 * kid.scale;
     cam.position.set(0, top * 0.6, 4.6);
     cam.lookAt(0, top * 0.5, 0);
     renderer.setRenderTarget(rt);

@@ -3,9 +3,10 @@
 // Yaw convention: forward = (-sin(yaw), 0, -cos(yaw)), so yaw 0 looks toward -Z.
 
 export const C = {
-  FIELD_X: 32,
-  FIELD_Z: 25,
+  FIELD_X: 45,           // the field is 90 x 70 m
+  FIELD_Z: 35,
   THROW_Z: 11,           // throw line distance from the stack
+  DEF_LINE: 6,           // defence line: defenders wait at least this far from the stack, on the far side
   PLAYER_H: 1.5,          // the players are children: 1.3-1.46 m tall
   PLAYER_R: 0.35,
   RUN: 6.2,              // m/s
@@ -21,7 +22,7 @@ export const C = {
   BASE_R: 1.6,           // how close to the base you must be to place a stone
   PICK_R: 1.6,           // how close to a stone you must be to grab it
   STACK_BLOCK_R: 0.6,    // players cannot walk through the stack
-  SCRAMBLE_TIME: 140,
+  SCRAMBLE_TIME: 160,
   CALL_TIME: 2.5,        // seconds a call for the ball stays active
   THROW_TIME: 14,
   ROUND_END_TIME: 5,
@@ -69,6 +70,21 @@ export const OBSTACLES = [
   { kind: 'hay', x: -4, z: -21, r: 1.15, h: 1.7 },
   { kind: 'pots', x: -12, z: 18, r: 0.85, h: 1.25 },
   { kind: 'tree', x: 13, z: 19, r: 0.5, h: 6 },
+  // third ring, added when the field grew to 90 x 70 m
+  { kind: 'hay', x: -36, z: -24, r: 1.15, h: 1.7 },
+  { kind: 'tree', x: -38, z: 6, r: 0.5, h: 6 },
+  { kind: 'well', x: -33, z: 24, r: 1.1, h: 1.0 },
+  { kind: 'pots', x: -22, z: 30, r: 0.85, h: 1.25 },
+  { kind: 'hay', x: -2, z: 31, r: 1.15, h: 1.7 },
+  { kind: 'tree', x: 24, z: 28, r: 0.5, h: 6 },
+  { kind: 'hay', x: 38, z: 20, r: 1.15, h: 1.7 },
+  { kind: 'pots', x: 39, z: -6, r: 0.85, h: 1.25 },
+  { kind: 'tree', x: 35, z: -27, r: 0.5, h: 6 },
+  { kind: 'well', x: 14, z: -31, r: 1.1, h: 1.0 },
+  { kind: 'pots', x: -14, z: -31, r: 0.85, h: 1.25 },
+  { kind: 'hay', x: -28, z: -8, r: 1.15, h: 1.7 },
+  { kind: 'hay', x: 28, z: 12, r: 1.15, h: 1.7 },
+  { kind: 'tree', x: 0, z: 22, r: 0.5, h: 6 },
 ];
 
 export function pushOutOfObstacles(p) {
@@ -128,6 +144,13 @@ export function pushOutOfStack(p) {
 }
 
 // The thrower must stay in a small box behind the throw line.
+// Line rule: until the ball touches the stack, attackers stay behind the throw line and defenders behind
+// the defence line on the far side. side: 'attack' | 'defend'.
+export function clampToLine(p, side) {
+  if (side === 'attack') { if (p.z < C.THROW_Z) p.z = C.THROW_Z; }
+  else if (side === 'defend') { if (p.z > -C.DEF_LINE) p.z = -C.DEF_LINE; }
+}
+
 export function clampToThrowZone(p) {
   if (p.x > 3) p.x = 3; else if (p.x < -3) p.x = -3;
   if (p.z < C.THROW_Z) p.z = C.THROW_Z; else if (p.z > C.THROW_Z + 3) p.z = C.THROW_Z + 3;
@@ -163,6 +186,7 @@ export function stepLocal(p, mx, my, jump, dt, opts) {
   pushOutOfStack(p);
   pushOutOfObstacles(p);
   if (opts.zone) clampToThrowZone(p);
+  if (opts.line) clampToLine(p, opts.line);
   p.mv = len;
 }
 

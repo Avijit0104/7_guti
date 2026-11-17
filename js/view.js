@@ -5,6 +5,8 @@ import { C, STONES, TEAMS, handPos } from './config.js';
 import { Human } from './character.js';
 import { RigHuman, riggedReady } from './rigged.js';
 import { Kid } from './kid.js';
+import { Person, peopleReady } from './person.js';
+import { CAST } from './cast.js';
 
 // Which characters to draw: the village kids (default), ?chars=kaykit for the KayKit models, ?chars=simple for the first figures.
 const CHARS = new URLSearchParams(location.search).get('chars') || 'kids';
@@ -148,8 +150,14 @@ export class View {
     if (c && (c.name !== row[P.NAME] || c.team !== row[P.TEAM] || c.char !== row[P.CHAR])) { this.scene.remove(c.h.group); c.h.dispose(); c = null; }
     if (!c) {
       const team = TEAMS[row[P.TEAM]];
-      const Kind = CHARS === 'kaykit' ? (riggedReady() ? RigHuman : Human) : CHARS === 'simple' ? Human : Kid;
-      const h = new Kind({ id, outfit: row[P.CHAR] ?? -1, shirt: team.color, name: row[P.NAME], labelCss: team.css });
+      // the human models once they have loaded; until then the code-built figure of the same outfit
+      const ci = row[P.CHAR] ?? -1;
+      let h;
+      const opts = { id, shirt: team.color, name: row[P.NAME], labelCss: team.css };
+      if (CHARS === 'kaykit') h = new (riggedReady() ? RigHuman : Human)(opts);
+      else if (CHARS === 'simple') h = new Human(opts);
+      else if (peopleReady()) h = new Person({ ...opts, outfit: ci });
+      else h = new Kid({ ...opts, outfit: ci >= 0 ? CAST[ci % CAST.length].kid : -1 });
       this.scene.add(h.group);
       c = { h, name: row[P.NAME], team: row[P.TEAM], char: row[P.CHAR] };
       this.chars.set(id, c);
@@ -183,8 +191,19 @@ export class View {
         d.yaw = lerpAngle(a[P.YAW], b[P.YAW], Math.min(1, t)); d.pitch = b[P.PITCH]; d.mv = lerp(a[P.MV], b[P.MV], Math.min(1, t));
       }
       h.group.position.set(d.x, d.y, d.z);
-      h.group.rotation.y = d.yaw;
-      h.update(dt, { mv: d.mv, air: d.y > 0.06, carry: b[P.CARRY] >= 0, ball: B.b[3] === id, alive, thr: b[P.THR], pitch: d.pitch });
+      // ground speed, and the direction actually travelled (players can run sideways or backwards)
+      if (d.px !== undefined && dt > 0) {
+        const vx = (d.x - d.px) / dt, vz = (d.z - d.pz) / dt, v = Math.hypot(vx, vz);
+        if (v > 20) d.sp = 0; // a teleport (new round, own throw turn)
+        else { d.sp = lerp(d.sp || 0, v, Math.min(1, dt * 10)); if (v > 0.8) d.moveYaw = Math.atan2(-vx, -vz); }
+      }
+      d.px = d.x; d.pz = d.z;
+      // the body turns to face where it runs, except while holding or throwing the ball (then it faces the aim)
+      const aiming = B.b[3] === id || (h.throwT !== undefined && h.throwT < 0.6);
+      const faceTo = !aiming && (d.sp || 0) > 1.2 && d.moveYaw !== undefined ? d.moveYaw : d.yaw;
+      d.fy = d.fy === undefined ? faceTo : lerpAngle(d.fy, faceTo, Math.min(1, dt * 12));
+      h.group.rotation.y = d.fy;
+      h.update(dt, { speed: alive ? (d.sp || 0) : 0, mv: d.mv, air: d.y > 0.06, carry: b[P.CARRY] >= 0, ball: B.b[3] === id, alive, thr: b[P.THR], pitch: d.pitch });
       if (id === ctx.myId && ctx.fpp && alive) h.group.visible = false;
       // name tags: not for yourself, and not when someone is right in front of the camera (they would fill the screen)
       h.label.visible = alive && id !== ctx.myId && this.camera.position.distanceToSquared(h.group.position) > 9;
@@ -229,8 +248,9 @@ export class View {
           m.quaternion.copy(cam.quaternion);
         } else if (d) {
           const ch = this.chars.get(b[8]), cf = ch ? ch.h.carryF : 0.42, cy = ch ? ch.h.carryY : 1.08;
-          m.position.set(d.x - Math.sin(d.yaw) * cf, d.y + cy, d.z - Math.cos(d.yaw) * cf);
-          m.rotation.set(0, d.yaw, 0);
+          const fy = d.fy !== undefined ? d.fy : d.yaw;
+          m.position.set(d.x - Math.sin(fy) * cf, d.y + cy, d.z - Math.cos(fy) * cf);
+          m.rotation.set(0, fy, 0);
         }
       } else if (a[7] === 2 || t >= 1) {
         m.position.set(b[0], b[1], b[2]); m.quaternion.set(b[3], b[4], b[5], b[6]);
