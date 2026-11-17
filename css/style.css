@@ -66,6 +66,9 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; }
 #btnThrow { right: max(22px, env(safe-area-inset-right)); bottom: max(26px, env(safe-area-inset-bottom)); }
 #btnAct { right: calc(max(22px, env(safe-area-inset-right)) + 104px); bottom: max(20px, env(safe-area-inset-bottom)); }
 #btnJump { right: calc(max(22px, env(safe-area-inset-right)) + 8px); bottom: calc(max(26px, env(safe-area-inset-bottom)) + 106px); }
+#btnCall { right: calc(max(22px, env(safe-area-inset-right)) + 96px); bottom: calc(max(26px, env(safe-area-inset-bottom)) + 92px); font-size: 11px; line-height: 1.1; }
+#btnCall.hidden-btn { display: none; }
+#btnCall.called { background: rgba(255,224,102,.8); color: #2a1c06; border-color: #fff; }
 body:not(.touch) .round { transform: scale(.8); transform-origin: bottom right; opacity: .8; }
 
 /* ---------- screens ---------- */

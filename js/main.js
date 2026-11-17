@@ -9,6 +9,7 @@ import { Sim } from './sim.js';
 import { HostNet, GuestNet, makeCode } from './net.js';
 import { sfx, unlockAudio, toggleMute } from './audio.js';
 import { loadRiggedModels } from './rigged.js';
+import { glowPulse } from './glow.js';
 
 const $ = (id) => document.getElementById(id);
 const input = new Input();
@@ -128,6 +129,10 @@ function handleEvent(e) {
     }
     case 'pick': sfx.pick(); break;
     case 'catch': sfx.catch(); break;
+    case 'call':
+      if (e.to === myId) { hud.feed(`${tag(e.id)} is calling for the ball`); sfx.catch(); }
+      else if (mine) hud.feed('You called for the ball');
+      break;
     case 'place': sfx.place(); hud.feed(`${tag(e.id)} placed stone ${e.i + 1} of 7`); break;
     case 'out': sfx.out(); if (mine) hud.banner('You are out!<small>Hit by the ball</small>'); else hud.feed(`${tag(e.id)} is out${e.by >= 0 ? ' — hit by ' + tag(e.by) : ''}`); break;
     case 'roundEnd': {
@@ -321,6 +326,7 @@ function controlLocal(dt) {
     aimVel[0] = d[0] * sp; aimVel[1] = d[1] * sp; aimVel[2] = d[2] * sp;
   } else { charging = false; charge = 0; }
   if (inp.act && alive) doAction({ k: 'act' });
+  if (inp.call && alive) doAction({ k: 'call' });
   if (inp.cam) fpp = !fpp;
 
   if (guestNet) {
@@ -375,6 +381,7 @@ function frame(now) {
     }
   }
   if (window.__g.cam) window.__g.cam(camera); // debugging: override the camera from the console
+  glowPulse.value = 0.85 + Math.sin(time * 3) * 0.15;
   renderer.render(scene, camera);
 
   // keep it smooth: drop the render resolution if the device struggles, then shadows
@@ -410,8 +417,9 @@ try {
 startBackground();
 hud.show('menu');
 // The rigged characters load in the background; the game is playable with the built-in figures meanwhile.
-if (new URLSearchParams(location.search).get('models') !== '0') loadRiggedModels().then((ok) => { if (ok) view.rebuildCharacters(); });
+// The KayKit models are only downloaded when asked for with ?chars=kaykit (the village kids are built in code).
+if (new URLSearchParams(location.search).get('chars') === 'kaykit') loadRiggedModels().then((ok) => { if (ok) view.rebuildCharacters(); });
 requestAnimationFrame(frame);
 
 // for debugging in the browser console
-window.__g = { get sim() { return sim; }, get snap() { return snap; }, me, input, view, get mode() { return mode; }, get myId() { return myId; }, renderer };
+window.__g = { frame: (n = 1) => { for (let i = 0; i < n; i++) frame(last + 1000 / 60); }, get sim() { return sim; }, get snap() { return snap; }, me, input, view, get mode() { return mode; }, get myId() { return myId; }, renderer };

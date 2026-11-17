@@ -6,7 +6,7 @@ export class Input {
     this.move = { x: 0, y: 0 };      // x = strafe right, y = forward
     this.lookX = 0; this.lookY = 0;  // accumulated since last read (radians)
     this.throwHeld = false;
-    this._edges = { jump: false, act: false, cam: false, release: false };
+    this._edges = { jump: false, act: false, cam: false, release: false, call: false };
     this.keys = {};
     this.joy = { id: null, ox: 0, oy: 0, x: 0, y: 0 };
     this.look = { id: null, x: 0, y: 0 };
@@ -65,7 +65,7 @@ export class Input {
 
     // buttons
     const tap = (id, edge) => $(id).addEventListener('pointerdown', (e) => { e.preventDefault(); this._edges[edge] = true; });
-    tap('btnJump', 'jump'); tap('btnAct', 'act'); tap('btnCam', 'cam');
+    tap('btnJump', 'jump'); tap('btnAct', 'act'); tap('btnCam', 'cam'); tap('btnCall', 'call');
     const bt = $('btnThrow');
     // holding THROW also aims: drag the same thumb to look around while charging
     let bx = 0, by = 0;
@@ -87,6 +87,7 @@ export class Input {
       if (e.code === 'Space') { this._edges.jump = true; e.preventDefault(); }
       if (e.code === 'KeyE') this._edges.act = true;
       if (e.code === 'KeyV') this._edges.cam = true;
+      if (e.code === 'KeyQ') this._edges.call = true;
       if (e.code === 'KeyF') this.throwHeld = true;
     });
     addEventListener('keyup', (e) => {
@@ -119,7 +120,7 @@ export class Input {
     this.move.y = dead ? 0 : Math.max(-1, Math.min(1, y));
     const out = { mx: this.move.x, my: this.move.y, lookX: this.lookX, lookY: this.lookY, throwHeld: this.throwHeld, ...this._edges };
     this.lookX = this.lookY = 0;
-    this._edges.jump = this._edges.act = this._edges.cam = this._edges.release = false;
+    this._edges.jump = this._edges.act = this._edges.cam = this._edges.release = this._edges.call = false;
     return out;
   }
 }

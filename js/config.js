@@ -3,10 +3,10 @@
 // Yaw convention: forward = (-sin(yaw), 0, -cos(yaw)), so yaw 0 looks toward -Z.
 
 export const C = {
-  FIELD_X: 26,
-  FIELD_Z: 20,
+  FIELD_X: 32,
+  FIELD_Z: 25,
   THROW_Z: 11,           // throw line distance from the stack
-  PLAYER_H: 1.75,
+  PLAYER_H: 1.5,          // the players are children: 1.3-1.46 m tall
   PLAYER_R: 0.35,
   RUN: 6.2,              // m/s
   BALL_MULT: 0.55,       // speed multiplier while holding the ball
@@ -21,7 +21,8 @@ export const C = {
   BASE_R: 1.6,           // how close to the base you must be to place a stone
   PICK_R: 1.6,           // how close to a stone you must be to grab it
   STACK_BLOCK_R: 0.6,    // players cannot walk through the stack
-  SCRAMBLE_TIME: 120,
+  SCRAMBLE_TIME: 140,
+  CALL_TIME: 2.5,        // seconds a call for the ball stays active
   THROW_TIME: 14,
   ROUND_END_TIME: 5,
   WIN_SCORE: 7,
@@ -56,6 +57,15 @@ export const OBSTACLES = [
   { kind: 'tree', x: 18, z: 13, r: 0.5, h: 6 },
   { kind: 'pots', x: 20, z: 1, r: 0.85, h: 1.25 },
   { kind: 'hay', x: -21, z: -2, r: 1.15, h: 1.7 },
+  // outer ring, added when the field grew to 64 x 50 m
+  { kind: 'tree', x: -26, z: -18, r: 0.5, h: 6 },
+  { kind: 'well', x: -27, z: 8, r: 1.1, h: 1.0 },
+  { kind: 'hay', x: 26, z: -19, r: 1.15, h: 1.7 },
+  { kind: 'pots', x: 27, z: 9, r: 0.85, h: 1.25 },
+  { kind: 'tree', x: 10, z: -21, r: 0.5, h: 6 },
+  { kind: 'hay', x: -4, z: -21, r: 1.15, h: 1.7 },
+  { kind: 'pots', x: -12, z: 18, r: 0.85, h: 1.25 },
+  { kind: 'tree', x: 13, z: 19, r: 0.5, h: 6 },
 ];
 
 export function pushOutOfObstacles(p) {
@@ -129,7 +139,7 @@ export function aimDir(yaw, pitch) {
 // Where the ball leaves the hand. Same formula on host and client so the aim arc is exact.
 export function handPos(p) {
   const s = Math.sin(p.yaw), c = Math.cos(p.yaw);
-  return [p.x - s * 0.45 + c * 0.28, p.y + 1.55, p.z - c * 0.45 - s * 0.28];
+  return [p.x - s * 0.4 + c * 0.24, p.y + 1.3, p.z - c * 0.4 - s * 0.24];
 }
 
 // Moves a human-controlled player. mx = strafe right, my = forward, both -1..1.

@@ -172,6 +172,16 @@ function defenders(sim, dt) {
     }
   }
 
+  // A human holds the ball: a bot team-mate much closer to a runner calls for it.
+  if (holder && !holder.bot) {
+    const near = (q) => Math.min(...targets.map((t) => Math.hypot(t.x - q.x, t.z - q.z)), 99);
+    const hd = near(holder);
+    for (const p of mine) {
+      if (!p.bot || p === holder || sim.time - p.callT < 3.5) continue;
+      if (near(p) < hd - 6 && near(p) < 9 && !lineBlocked(holder.x, holder.z, p.x, p.z)) { sim.callForBall(p); break; }
+    }
+  }
+
   let slot = 0;
   for (const p of mine) {
     if (!p.bot) { slot++; continue; }
@@ -187,6 +197,15 @@ function defenders(sim, dt) {
         if (d < td) { td = d; tgt = t; }
       }
       if (!tgt) { p.mv = 0; slot++; continue; }
+      // a team-mate called for the ball: pass to them if the way is clear (bots answer after a short reaction)
+      const caller = mine.find((m) => m !== p && sim.time - m.callT < C.CALL_TIME && sim.time - m.callT > 0.25 && !lineBlocked(p.x, p.z, m.x, m.z));
+      if (caller) {
+        turn(p, yawTo(caller.x - p.x, caller.z - p.z), dt, 20);
+        const v = lob(handPos(p), caller.x + caller.vx * 0.3, caller.y + 1.0, caller.z + caller.vz * 0.3, 13);
+        caller.callT = -99;
+        sim.throwBall(p, v[0], v[1], v[2]);
+        slot++; continue;
+      }
       const dist = Math.hypot(tgt.x - p.x, tgt.z - p.z);
       turn(p, yawTo(tgt.x - p.x, tgt.z - p.z), dt, 12);
       // pass to a team-mate who is much closer to the target
@@ -207,7 +226,7 @@ function defenders(sim, dt) {
       if ((dist < DEF_RANGE && ai.hold > ai.wait && clear) || ai.hold > 6) {
         const from = handPos(p), speed = 17;
         const T = dist / speed;
-        const v = withError(lob(from, tgt.x + tgt.vx * T * 0.85, tgt.y + 1.0, tgt.z + tgt.vz * T * 0.85, speed), DEF_AIM[sim.teamSize] || 0.3, 0.9);
+        const v = withError(lob(from, tgt.x + tgt.vx * T * 0.85, tgt.y + 0.85, tgt.z + tgt.vz * T * 0.85, speed), DEF_AIM[sim.teamSize] || 0.3, 0.9);
         sim.throwBall(p, v[0], v[1], v[2]);
       } else {
         moveTo(p, tgt.x, tgt.z, dt, C.BALL_MULT, 3, 0, sim.time);

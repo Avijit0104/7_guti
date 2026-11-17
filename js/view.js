@@ -4,6 +4,24 @@ import * as THREE from '../vendor/three.module.min.js';
 import { C, STONES, TEAMS, handPos } from './config.js';
 import { Human } from './character.js';
 import { RigHuman, riggedReady } from './rigged.js';
+import { Kid } from './kid.js';
+
+// Which characters to draw: the village kids (default), ?chars=kaykit for the KayKit models, ?chars=simple for the first figures.
+const CHARS = new URLSearchParams(location.search).get('chars') || 'kids';
+
+function callMarker() {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+  const g = c.getContext('2d');
+  g.fillStyle = '#ffe066'; g.strokeStyle = 'rgba(0,0,0,0.6)'; g.lineWidth = 6;
+  g.beginPath(); g.arc(64, 56, 44, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.beginPath(); g.moveTo(48, 96); g.lineTo(64, 122); g.lineTo(80, 96); g.closePath(); g.fill();
+  g.fillStyle = '#2a1c06'; g.font = '900 30px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText('PASS', 64, 58);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, depthTest: false, transparent: true }));
+  s.scale.set(0.7, 0.7, 1); s.renderOrder = 5; s.visible = false;
+  return s;
+}
 
 // snapshot player array indexes
 export const P = { ID: 0, TEAM: 1, X: 2, Y: 3, Z: 4, YAW: 5, PITCH: 6, MV: 7, FLAGS: 8, CARRY: 9, THR: 10, TP: 11, NAME: 12 };
@@ -41,6 +59,7 @@ export class View {
     this.A = null; this.B = null; this.direct = true;
     this.shake = 0;
     this.disp = new Map(); // id -> displayed {x,y,z,yaw}
+    this.markers = new Map(); // id -> 'PASS' sprite
     this._v = new THREE.Vector3(); this._q = new THREE.Quaternion(); this._q2 = new THREE.Quaternion();
 
     // ball
@@ -129,7 +148,7 @@ export class View {
     if (c && (c.name !== row[P.NAME] || c.team !== row[P.TEAM])) { this.scene.remove(c.h.group); c.h.dispose(); c = null; }
     if (!c) {
       const team = TEAMS[row[P.TEAM]];
-      const Kind = riggedReady() ? RigHuman : Human; // built-in figures until the models have loaded
+      const Kind = CHARS === 'kaykit' ? (riggedReady() ? RigHuman : Human) : CHARS === 'simple' ? Human : Kid;
       const h = new Kind({ id, shirt: team.color, name: row[P.NAME], labelCss: team.css });
       this.scene.add(h.group);
       c = { h, name: row[P.NAME], team: row[P.TEAM] };
@@ -169,6 +188,14 @@ export class View {
       if (id === ctx.myId && ctx.fpp && alive) h.group.visible = false;
       // name tags: not for yourself, and not when someone is right in front of the camera (they would fill the screen)
       h.label.visible = alive && id !== ctx.myId && this.camera.position.distanceToSquared(h.group.position) > 9;
+      // 'PASS' bubble over a player who is calling for the ball
+      const calling = alive && !!(b[P.FLAGS] & 4);
+      let mk = this.markers.get(id);
+      if (calling && !mk) { mk = callMarker(); this.scene.add(mk); this.markers.set(id, mk); }
+      if (mk) {
+        mk.visible = calling && !(id === ctx.myId && ctx.fpp);
+        if (mk.visible) mk.position.set(d.x, d.y + 2.05 + Math.sin(ctx.time * 9) * 0.07, d.z);
+      }
     }
     for (const [id, c] of this.chars) if (!B.p.some((r) => r[P.ID] === id)) { this.scene.remove(c.h.group); c.h.dispose(); this.chars.delete(id); }
 
@@ -273,10 +300,10 @@ export class View {
     }
     const sy = Math.sin(tgt.yaw), cy = Math.cos(tgt.yaw), cp = Math.cos(tgt.pitch), sp = Math.sin(tgt.pitch);
     if (fpp) {
-      cam.position.set(tgt.x - sy * 0.1, tgt.y + 1.64, tgt.z - cy * 0.1);
+      cam.position.set(tgt.x - sy * 0.1, tgt.y + 1.3, tgt.z - cy * 0.1);
     } else {
       const dist = dead ? 5 : 3.5;
-      const px = tgt.x, py = tgt.y + 1.6, pz = tgt.z;
+      const px = tgt.x, py = tgt.y + 1.32, pz = tgt.z;
       cam.position.set(px + sy * cp * dist + cy * 0.6, Math.max(0.35, py - sp * dist + 0.3), pz + cy * cp * dist - sy * 0.6);
     }
     if (this.shake > 0) {

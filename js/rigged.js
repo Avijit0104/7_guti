@@ -6,6 +6,7 @@ import * as THREE from '../vendor/three.module.min.js';
 import { GLTFLoader } from '../vendor/GLTFLoader.js';
 import { clone as cloneSkinned } from '../vendor/SkeletonUtils.js';
 import { makeLabel } from './character.js';
+import { addTeamGlow } from './glow.js';
 
 const FILES = ['Rogue', 'Barbarian', 'Knight', 'Mage', 'Rogue_Hooded'];
 const CLIPS = { idle: 'Idle', run: 'Running_A', jump: 'Jump_Idle', death: 'Death_A', throw: 'Throw', carry: '2H_Melee_Idle' };
@@ -69,6 +70,7 @@ export class RigHuman {
         const m = o.material.clone();
         m.color.set(0xffffff).lerp(team, 0.22);
         if ('metalness' in m) { m.metalness = 0; m.roughness = 0.85; }
+        addTeamGlow(m, shirt);
         seen.set(o.material, m); this.mats.push(m);
       }
       o.material = seen.get(o.material);

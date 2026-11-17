@@ -10,7 +10,7 @@ export class Hud {
     this.el = {
       hud: $('hud'), scA: $('scA'), scB: $('scB'), timer: $('timer'), pips: [...$('pips').children], role: $('role'),
       banner: $('banner'), feed: $('feed'), charge: $('charge'), fill: $('chargeFill'), cross: $('cross'),
-      bThrow: $('btnThrow'), bAct: $('btnAct'), bCam: $('btnCam'), sides: [...document.querySelectorAll('#top .side')],
+      bThrow: $('btnThrow'), bAct: $('btnAct'), bCall: $('btnCall'), bCam: $('btnCam'), sides: [...document.querySelectorAll('#top .side')],
       menu: $('menu'), lobby: $('lobby'), result: $('result'), lobA: $('lobA'), lobB: $('lobB'),
     };
     this.cache = {};
@@ -100,11 +100,17 @@ export class Hud {
           if (c < 0) role = `Grab stone ${snap.pc + 1} (yellow arrow) — dodge the ball!`;
           else if (c === snap.pc) role = `Run stone ${c + 1} into the base circle!`;
           else role = `You hold stone ${c + 1}, but stone ${snap.pc + 1} goes first — GRAB drops it`;
-        } else role = hasBall ? 'You have the ball — throw it at an attacker!' : 'Get the ball!';
+        } else if (hasBall) {
+          const caller = snap.p.find((r) => r[P.ID] !== myId && r[P.TEAM] === me[P.TEAM] && (r[P.FLAGS] & 5) === 5);
+          role = caller ? `${caller[P.NAME]} is calling for the ball — pass or throw!` : 'You have the ball — throw it at an attacker!';
+        } else role = snap.b[3] >= 0 ? 'A team-mate has the ball — CALL for it when you are close to a runner' : 'Get the ball!';
       }
     }
     this._set('role', role, (v) => { e.role.textContent = v; });
 
+    const holderRow = snap.b[3] >= 0 ? snap.p.find((r) => r[P.ID] === snap.b[3]) : null;
+    const canCall = alive && !attack && snap.ph === 'scramble' && !!holderRow && holderRow[P.ID] !== myId && holderRow[P.TEAM] === me[P.TEAM];
+    this._set('callBtn', canCall ? ((me[P.FLAGS] & 4) ? 2 : 1) : 0, (v) => { e.bCall.classList.toggle('hidden-btn', v === 0); e.bCall.classList.toggle('called', v === 2); });
     this._set('throwBtn', hasBall ? (st.charging ? 2 : 1) : 0, (v) => { e.bThrow.classList.toggle('off', v === 0); e.bThrow.classList.toggle('hot', v > 0); });
     const canAct = alive && attack && snap.ph === 'scramble';
     this._set('actBtn', canAct ? (me[P.CARRY] >= 0 ? 2 : 1) : 0, (v) => { e.bAct.classList.toggle('off', v === 0); e.bAct.classList.toggle('go', v === 1); e.bAct.textContent = v === 2 ? 'DROP' : 'GRAB'; });

@@ -38,7 +38,7 @@ export class Sim {
       this.players.push({
         id: i, name: BOT_NAMES[i % BOT_NAMES.length], team: i % 2, bot: true, conn: null,
         x: 0, y: 0, z: 0, vy: 0, yaw: 0, pitch: 0, mv: 0, vx: 0, vz: 0, px: 0, pz: 0,
-        alive: true, carry: -1, thr: 0, tp: 0, cd: 0, ai: {},
+        alive: true, carry: -1, thr: 0, tp: 0, cd: 0, callT: -99, ai: {},
       });
     }
     this._lineUp();
@@ -206,7 +206,19 @@ export class Sim {
       this.throwBall(p, d[0] / len * sp, d[1] / len * sp, d[2] / len * sp);
     } else if (a.k === 'act') {
       this.grab(p);
+    } else if (a.k === 'call') {
+      this.callForBall(p);
     }
+  }
+
+  // A defender asks the team-mate holding the ball to pass it. Bots holding the ball answer it (bots.js);
+  // humans see a PASS bubble over the caller.
+  callForBall(p) {
+    const h = this.ball.holder;
+    if (this.phase !== 'scramble' || !p.alive || p.team === this.attackTeam || h < 0 || h === p.id) return;
+    if (this.players[h].team !== p.team || this.time - p.callT < 0.8) return;
+    p.callT = this.time;
+    this.emit('call', { id: p.id, to: h });
   }
 
   // ---------- ball ----------
@@ -215,7 +227,7 @@ export class Sim {
     b.holder = id; b.live = false;
     b.body.collisionFilterMask = id >= 0 ? 0 : (G_GROUND | G_STONE);
     b.body.velocity.setZero(); b.body.angularVelocity.setZero();
-    if (id >= 0) { this.players[id].ai.hold = 0; }
+    if (id >= 0) { this.players[id].ai.hold = 0; this.players[id].callT = -99; }
   }
 
   throwBall(p, vx, vy, vz) {
@@ -514,7 +526,7 @@ export class Sim {
       tm: Math.max(0, Math.ceil(this.phase === 'roundEnd' ? this.phaseT : this.timer)), th: this.thrower, pc: this.placed,
       fl: this.ballInFlight ? 1 : 0, lw: this.lastWinner, ts: this.teamSize, kn: this.knocked,
       p: this.players.map((p) => [p.id, p.team, r2(p.x), r2(p.y), r2(p.z), r2(p.yaw), r2(p.pitch), r2(p.mv),
-        (p.alive ? 1 : 0) | (p.bot ? 2 : 0), p.carry, p.thr, p.tp, p.name]),
+        (p.alive ? 1 : 0) | (p.bot ? 2 : 0) | (this.time - p.callT < C.CALL_TIME ? 4 : 0), p.carry, p.thr, p.tp, p.name]),
       b: [r2(b.position.x), r2(b.position.y), r2(b.position.z), this.ball.holder, this.ball.live ? 1 : 0],
       s: this.stones.map((st) => {
         const q = st.body.quaternion, p = st.body.position;
